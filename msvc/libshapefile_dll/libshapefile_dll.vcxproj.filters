@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{EA1EEE33-30B4-4447-BED6-71143056C6DC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shapefile">
+      <UniqueIdentifier>{9D6D6585-B517-4383-929D-EBC9C2894219}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\common\unitypes.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2json.h">
+      <Filter>shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2wkb.h">
+      <Filter>shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2wkt.h">
+      <Filter>shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shapefile_api.h">
+      <Filter>shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shapefile_def.h">
+      <Filter>shapefile</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="prepare.bat" />
+    <None Include="update.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\shapefile\dbfopen.c">
+      <Filter>shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shapefile\shpopen.c">
+      <Filter>shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shapefile\shptree.c">
+      <Filter>shapefile</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

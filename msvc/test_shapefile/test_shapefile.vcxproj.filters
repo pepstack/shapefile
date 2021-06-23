@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{7EC86825-09D6-44A0-8A78-B149661D1F85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{F3098B28-C130-4B52-8826-6D5E19B1CA3B}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{B918B9E2-08A6-4433-8682-69269D421B59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\win32">
+      <UniqueIdentifier>{05492E38-E96E-458D-BE3E-AA1495325570}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\apps\test_shapefile\app_incl.h">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\apps\test_shapefile\app_main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\win32\getopt_longw.c">
+      <Filter>common\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\win32\getoptw.c">
+      <Filter>common\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\win32\syslog-client.c">
+      <Filter>common\win32</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="prepare.bat" />
+    <None Include="update.bat" />
+  </ItemGroup>
+</Project>
