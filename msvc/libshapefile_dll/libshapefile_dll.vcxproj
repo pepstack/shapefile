@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7B0C7A7F-2F03-4254-AC1F-67C3338B9B83}</ProjectGuid>
+    <ProjectGuid>{F70A70E4-43F8-43E9-9EE3-61F5AC1EB7CD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libshapefile_dll</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -204,21 +204,17 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\common\unitypes.h" />
     <ClInclude Include="..\..\src\shapefile\shapefile_api.h" />
     <ClInclude Include="..\..\src\shapefile\shapefile_def.h" />
-    <ClInclude Include="..\..\src\shapefile\shp2json.h" />
-    <ClInclude Include="..\..\src\shapefile\shp2wkb.h" />
-    <ClInclude Include="..\..\src\shapefile\shp2wkt.h" />
+    <ClInclude Include="..\..\src\shapefile\shapefile_i.h" />
+    <ClInclude Include="..\..\src\common\unitypes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\shapefile\dbfopen.c" />
-    <ClCompile Include="..\..\src\shapefile\shpopen.c" />
-    <ClCompile Include="..\..\src\shapefile\shptree.c" />
+    <ClCompile Include="..\..\src\shapefile\shapefile.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

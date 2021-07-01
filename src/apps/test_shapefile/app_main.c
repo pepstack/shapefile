@@ -36,12 +36,12 @@ int main(int argc, char *argv[])
     app_logger = logger_manager_load(NULL);
 #endif
 
+    // TODO:
 
 
 #ifdef HAS_LIBCLOGGER
     LOGGER_INFO(app_logger, "app end.");
 #endif
 
-    system("pause");
     return 0;
 }

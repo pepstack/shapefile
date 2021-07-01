@@ -104,6 +104,7 @@ endif
 # Project Specific Configuration
 PREFIX = .
 DISTROOT = $(PREFIX)/dist
+APPS_DISTROOT = $(DISTROOT)/apps
 
 LIBCLOGGER_DIR = $(PREFIX)/deps/libclogger
 
@@ -113,10 +114,11 @@ SRC_DIR = $(PREFIX)/src
 COMMON_DIR = $(SRC_DIR)/common
 APPS_DIR = $(SRC_DIR)/apps
 
+
+#----------------------------------------------------------
+# shapefile
+
 SHAPEFILE_DIR = $(SRC_DIR)/shapefile
-
-APPS_DISTROOT = $(DISTROOT)/apps
-
 SHAPEFILE_VERSION_FILE = $(SHAPEFILE_DIR)/VERSION
 SHAPEFILE_VERSION = $(shell cat $(SHAPEFILE_VERSION_FILE))
 
@@ -125,12 +127,19 @@ SHAPEFILE_DYNAMIC_LIB = libshapefile.so.$(SHAPEFILE_VERSION)
 
 SHAPEFILE_DISTROOT = $(DISTROOT)/libshapefile-$(SHAPEFILE_VERSION)
 SHAPEFILE_DIST_LIBDIR=$(SHAPEFILE_DISTROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
+#----------------------------------------------------------
 
-#......
+
+# add other projects here:
+#...
 
 
 # Set all dirs for C source: './src/a ./src/b'
-ALLCDIRS += $(SRCDIR) $(COMMON_DIR) $(SHAPEFILE_DIR)
+ALLCDIRS += $(SRCDIR) \
+	$(COMMON_DIR) \
+	$(SHAPEFILE_DIR)
+#...
+
 
 # Get pathfiles for C source files: './src/a/1.c ./src/b/2.c'
 CSRCS := $(foreach cdir, $(ALLCDIRS), $(wildcard $(cdir)/*.c))
@@ -143,9 +152,9 @@ COBJS = $(patsubst %.c, %.o, $(notdir $(CSRCS)))
 INCDIRS += -I$(PREFIX) \
 	-I$(SRC_DIR) \
 	-I$(COMMON_DIR) \
+	-I$(LIBCLOGGER_DIR)/include \
 	-I$(SHAPEFILE_DIR) \
-	-I$(LIBCLOGGER_DIR)/include
-#......
+#...
 
 
 ifeq ($(MINGW_FLAG), 1)
@@ -153,7 +162,7 @@ ifeq ($(MINGW_FLAG), 1)
 	MINGW_LINKS = -lws2_32
 else
 	MINGW_CSRCS =
-	MINGW_LINKS =
+	MINGW_LINKS = -lrt
 endif
 
 MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
@@ -165,6 +174,7 @@ MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
 
 all: $(SHAPEFILE_DYNAMIC_LIB).$(OSARCH) $(SHAPEFILE_STATIC_LIB).$(OSARCH)
 
+#...
 
 
 #----------------------------------------------------------
@@ -184,30 +194,33 @@ $(foreach src,$(MINGW_CSRCS),$(eval $(call COBJS_template,$(src))))
 
 help:
 	@echo
-	@echo Build libshapefile-$(shell cat $(SHAPEFILE_VERSION_FILE)) for:
+	@echo "Build all libs and apps as the following"
 	@echo
-	@echo "1) 64 bits release (default)"
-	@echo "    $$ make"
+	@echo "Build 64 bits release (default):"
+	@echo "    $$ make clean && make"
 	@echo
-	@echo "2) 32 bits debug"
-	@echo "    $$ make RELEASE=0 BITS=32"
+	@echo "Build 32 bits debug:"
+	@echo "    $$ make clean && make RELEASE=0 BITS=32"
 	@echo
-	@echo Dist target into default path: $(SHAPEFILE_DISTROOT)"
-	@echo "    $$ make dist"
+	@echo "Dist target into default path:"
+	@echo "    $$ make clean && make dist"
 	@echo
-	@echo Dist target into given path:
+	@echo "Dist target into given path:"
 	@echo "    $$ make SHAPEFILE_DISTROOT=/path/to/YourInstallDir dist"
+	@echo
+	@echo "Build apps with all libs:"
+	@echo "    $$ make clean && make apps"
 	@echo
 	@echo "Show make options:"
 	@echo "    $$ make help"
 
 
+#----------------------------------------------------------
 $(SHAPEFILE_STATIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	rm -f $@
 	rm -f $(SHAPEFILE_STATIC_LIB)
 	ar cr $@ $^
 	ln -s $@ $(SHAPEFILE_STATIC_LIB)
-
 
 $(SHAPEFILE_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	$(CC) $(CFLAGS) -shared \
@@ -218,21 +231,21 @@ $(SHAPEFILE_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 		$(LDFLAGS) \
 		$(MINGW_LINKS)
 	ln -s $@ $(SHAPEFILE_DYNAMIC_LIB)
+#----------------------------------------------------------
 
 
 apps: dist test_shapefile.exe.$(OSARCH) test_shapefiledll.exe.$(OSARCH)
 
 
 # -lrt for Linux
-
 test_shapefile.exe.$(OSARCH): $(APPS_DIR)/test_shapefile/app_main.c
 	@echo Building test_shapefile.exe.$(OSARCH)
 	$(CC) $(CFLAGS) $< $(INCDIRS) \
 	-o $@ \
 	$(SHAPEFILE_STATIC_LIB) \
 	$(LDFLAGS) \
-	$(MINGW_LINKS) \
-	-lrt
+	$(MINGW_LINKS)
+	ln -sf $@ test_shapefile
 
 
 test_shapefiledll.exe.$(OSARCH): $(APPS_DIR)/test_shapefile/app_main.c
@@ -242,13 +255,13 @@ test_shapefiledll.exe.$(OSARCH): $(APPS_DIR)/test_shapefile/app_main.c
 	-o $@ \
 	$(SHAPEFILE_DYNAMIC_LIB) \
 	$(LDFLAGS) \
-	$(MINGW_LINKS) \
-	-lrt
+	$(MINGW_LINKS)
+	ln -sf $@ test_shapefiledll
 
 
 dist: all
-	@mkdir -p $(SHAPEFILE_DISTROOT)/include/shapefile
 	@mkdir -p $(SHAPEFILE_DISTROOT)/include/common
+	@mkdir -p $(SHAPEFILE_DISTROOT)/include/shapefile
 	@mkdir -p $(SHAPEFILE_DIST_LIBDIR)
 	@cp $(COMMON_DIR)/unitypes.h $(SHAPEFILE_DISTROOT)/include/common/
 	@cp $(SHAPEFILE_DIR)/shapefile_api.h $(SHAPEFILE_DISTROOT)/include/shapefile/
@@ -267,7 +280,6 @@ clean:
 	-rm -f $(SHAPEFILE_DYNAMIC_LIB)
 	-rm -f $(SHAPEFILE_STATIC_LIB).$(OSARCH)
 	-rm -f $(SHAPEFILE_DYNAMIC_LIB).$(OSARCH)
-	-rm -f ./msvc/*.VC.db
 	-rm -rf ./msvc/libshapefile/build
 	-rm -rf ./msvc/libshapefile/target
 	-rm -rf ./msvc/libshapefile_dll/build
@@ -278,7 +290,8 @@ clean:
 	-rm -rf ./msvc/test_shapefiledll/target
 	-rm -f test_shapefile.exe.$(OSARCH)
 	-rm -f test_shapefiledll.exe.$(OSARCH)
-	
+	-rm -f ./msvc/*.VC.db
+
 
 cleanall: clean
 	-rm -rf $(DISTROOT)

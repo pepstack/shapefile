@@ -1,5 +1,5 @@
 /******************************************************************************
- * shpopen.c
+ * shapefile.c
  *
  * v 1.4 2005/03/24 14:26:44
  *
@@ -35,114 +35,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
-#include "shapefile_api.h"
+#include "shapefile_i.h"
 
-#include "shp2wkb.h"
-#include "shp2wkt.h"
-
-#include <assert.h>
-#include <math.h>
-
-
-#ifdef _MSC_VER
- /* disable annoying warning: 4996 */
- # pragma warning (disable : 4996)
-#endif
-
-#define ByteCopy(a, b, c)  memcpy((b), (a), (c))
-
-#ifndef MAX_V2
- #define MAX_V2(a, b)  ((a)>(b) ? (a) : (b))
-#endif
-
-#ifndef MIN_V2
- #define MIN_V2(a, b)  ((a)<(b) ? (a) : (b))
-#endif
-
-#ifndef SGNOF
- #define SGNOF(a)  ((a) > 0 ? 1 : ((a) < 0 ? (-1) : 0))
-#endif
-
-#define  MEM_BLKSIZE  128
-
-
-typedef struct  _SHPInfo
-{
-    FILE        *fpSHP;
-    FILE        *fpSHX;
-
-    int         nShapeType; /* SHPT_* */
-    int         nFileSize;  /* SHP file */
-    int         nRecords;
-    int         nMaxRecords;
-    int         *panRecOffset;
-    int         *panRecSize;
-
-    double      adBoundsMin[4];
-    double      adBoundsMax[4];
-
-    int         bUpdated;
-    unsigned char *pabyRec;
-    int         nBufSize;
-} SHPInfo;
-
-
-/**
- * Swap double
- */
-STATIC_INLINE void SwapDouble(double *a, double *b)
-{
-    double t = *a;
-    *a = *b;
-    *b = t;
-}
-
-/**
- * Swap SHPPointType
- */
-STATIC_INLINE void SwapPointType(SHPPointType *p, SHPPointType *q)
-{
-    double t = p->x;
-    p->x = q->x;
-    q->x = t;
-
-    t = p->y;
-    p->y = q->y;
-    q->y = t;
-}
-
-
-/**
- * A realloc cover function that will access a 0 pointer as a valid input
- */
-static void* SfRealloc (void * pMem, int nNewSize)
-{
-    void *p;
-    if (pMem == 0) {
-        p = malloc(nNewSize);
-        if (!p) {
-            exit(EXIT_OUTMEMORY);
-        }
-        return p;
-    } else {
-        p = realloc (pMem, nNewSize);
-        if (!p) {
-            exit(EXIT_OUTMEMORY);
-        }
-        return p;
-    }
-}
-
-static int SHPTypeHasParts(int nSHPType)
-{
-    return (nSHPType == SHPT_POLYGON ||
-        nSHPType == SHPT_ARC ||
-        nSHPType == SHPT_POLYGONZ ||
-        nSHPType == SHPT_POLYGONM ||
-        nSHPType == SHPT_ARCZ ||
-        nSHPType == SHPT_ARCM ||
-        nSHPType == SHPT_MULTIPATCH);
-}
 
 /**
  * Write out a header for the .shp and .shx files as well as the
@@ -277,6 +171,7 @@ void SHPWriteHeader (SHPHandle psSHP)
     fflush(psSHP->fpSHX);
 }
 
+
 /**
  * SHPHasZM()
  */
@@ -287,10 +182,10 @@ static void SHPHasZM (int nSHPType, int *bHasZ, int *bHasM)
         nSHPType == SHPT_POLYGONM ||
         nSHPType == SHPT_MULTIPOINTM) {
         if (bHasM) {
-            *bHasM = TRUE;
+            *bHasM = SHAPEFILE_TRUE;
         }
         if (bHasZ) {
-            *bHasZ = FALSE;
+            *bHasZ = SHAPEFILE_FALSE;
         }
     } else if (nSHPType == SHPT_ARCZ || 
         nSHPType == SHPT_POINTZ || 
@@ -298,20 +193,21 @@ static void SHPHasZM (int nSHPType, int *bHasZ, int *bHasM)
         nSHPType == SHPT_MULTIPOINTZ || 
         nSHPType == SHPT_MULTIPATCH) {
         if (bHasM) {
-            *bHasM = TRUE;
+            *bHasM = SHAPEFILE_TRUE;
         }
         if (bHasZ) {
-            *bHasZ = TRUE;
+            *bHasZ = SHAPEFILE_TRUE;
         }
     } else {
         if (bHasM) {
-            *bHasM = FALSE;
+            *bHasM = SHAPEFILE_FALSE;
         }
         if (bHasZ) {
-            *bHasZ = FALSE;
+            *bHasZ = SHAPEFILE_FALSE;
         }
     }
 }
+
 
 /**
  * Open the .shp and .shx files based on the basename of the files or either file name
@@ -335,7 +231,7 @@ SHPHandle SHPOpen (const char * pszLayer, const char * pszAccess)
 
     /* Initialize the info structure */
     psSHP = (SHPHandle) calloc(sizeof(SHPInfo), 1);
-    psSHP->bUpdated = FALSE;
+    psSHP->bUpdated = SHAPEFILE_FALSE;
 
     /* Compute the base (layer) name.  If there is any extension
    *   on the passed in filename we will strip it off */
@@ -508,6 +404,7 @@ SHPHandle SHPOpen (const char * pszLayer, const char * pszAccess)
     return(psSHP);
 }
 
+
 /**
  * Close the .shp and .shx files
  */
@@ -533,6 +430,7 @@ void SHPClose(SHPHandle psSHP)
     }
     free(psSHP);
 }
+
 
 /**
  * Fetch general information about the shape file
@@ -565,6 +463,7 @@ void SHPGetInfo(SHPHandle psSHP,
         }
     }
 }
+
 
 /**
  * SHPGetType()
@@ -600,6 +499,7 @@ int SHPGetType(SHPHandle hSHP, int *bHasZ, int *bHasM)
 
     return -1;
 }
+
 
 /**
  * Create a new shape file and return a handle to the open shape file with read/write access
@@ -698,6 +598,7 @@ SHPHandle SHPCreate(const char * pszLayer, int nShapeType)
     return SHPOpen(pszLayer, "r+b");
 }
 
+
 /**
  * Compute a bounds rectangle for a shape, and set it into the 
  *  indicated location in the record
@@ -716,6 +617,7 @@ static void _SHPSetBounds(ub1 * pabyRec, SHPObject * psShape)
         BO_swap_qword(pabyRec + 24);
     }
 }
+
 
 /**
  * Recompute the extents of a shape
@@ -745,6 +647,7 @@ void SHPComputeExtents(SHPObject * psObject)
         psObject->dfMMax = MAX_V2(psObject->dfMMax, psObject->padfM[i]);
     }
 }
+
 
 /**
  * Create a shape object.  It should be freed with SHPDestroyObject()
@@ -826,6 +729,7 @@ SHPObject *SHPCreateObject (
     return(psObject);
 }
 
+
 /**
  * Create a shape object.  It should be freed with SHPDestroyObject()
  */
@@ -905,6 +809,7 @@ SHPObject * SHPCreateObject2 (
     return (psObject);
 }
 
+
 /**
  * Create a nil shape object.  Destroy with SHPDestroyObjectEx().
  *  cheungmine@gmail.com
@@ -914,6 +819,7 @@ SHPObjectEx * SHPCreateObjectEx (SHPObjectEx ** ppsObject)
     *ppsObject = (SHPObjectEx *) calloc(1, sizeof(SHPObjectEx));
     return (*ppsObject);
 }
+
 
 /**
  * Create a simple (common) shape object
@@ -929,6 +835,7 @@ SHPObject * SHPCreateSimpleObject (
     return SHPCreateObject(nSHPType, -1, 0, 0, 0, nVertices, padfX, padfY, padfZ, 0);
 }
 
+
 /**
  * Write out the vertices of a new structure
  *  Note that it is only possible to write vertices at the end of the file
@@ -939,7 +846,7 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
     int    i32;
     int    nRecordOffset, i, nRecordSize = 0;
   
-    psSHP->bUpdated = TRUE;
+    psSHP->bUpdated = SHAPEFILE_TRUE;
 
     /* Ensure that shape object matches the type of the file it is being written to */
     SHAPEFILE_ASSERT(psObject->nSHPType == psSHP->nShapeType || psObject->nSHPType == SHPT_NULL);
@@ -1212,7 +1119,7 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
         nRecordSize = 12;
     } else {
         /* unknown type */
-        SHAPEFILE_ASSERT(FALSE);
+        SHAPEFILE_ASSERT(SHAPEFILE_FALSE);
     }
 
     /* Establish where we are going to put this record. If we are
@@ -1286,6 +1193,7 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
 
     return(nShapeId );
 }
+
 
 /**
  * Read the vertices, parts, and other non-attribute information for one shape
@@ -1604,6 +1512,7 @@ SHPObject * SHPReadObject(SHPHandle psSHP, int hEntity)
     return(psShape);
 }
 
+
 /**
  * return SHPType
  */
@@ -1784,6 +1693,7 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds)
     return(nSHPType);
 }
 
+
 /**
  * Read the vertices, parts, and other non-attribute information for one shape
  *   cheungmine 2008-12
@@ -1792,7 +1702,7 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
 {
     /* Validate the record/entity number */
     if (hEntity < 0 || hEntity >= psSHP->nRecords) {
-        return(FALSE);
+        return(SHAPEFILE_FALSE);
     }
 
     /* Ensure our record buffer is large enough */
@@ -1804,7 +1714,7 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
     /* Read the record */
     if (fseek(psSHP->fpSHP, psSHP->panRecOffset[hEntity], 0) != 0 ||
         fread(psSHP->pabyRec, psSHP->panRecSize[hEntity]+8, 1, psSHP->fpSHP) != 1) {
-        return(FALSE);
+        return(SHAPEFILE_FALSE);
     }
 
     /* Allocate and minimally initialize the object */
@@ -1834,7 +1744,7 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
         }
     
         if (! nPoints) {
-            return FALSE;
+            return SHAPEFILE_FALSE;
         }
 
         /* Get the X/Y bounds */
@@ -1966,7 +1876,7 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
             BO_swap_dword(&nPoints);
         }
         if (! nPoints) {
-            return FALSE;
+            return SHAPEFILE_FALSE;
         }
 
         psShape->nVertices = nPoints;
@@ -2089,10 +1999,10 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
         }
 
         /* If we have a M measure value, then read it now.  We assume
-     *  that the measure can be present for any shape if the size is
-     *  big enough, but really it will only occur for the Z shapes
-     *  (options), and the M shapes
-     */
+         *  that the measure can be present for any shape if the size is
+         *  big enough, but really it will only occur for the Z shapes
+         *  (options), and the M shapes
+         */
         if (psSHP->panRecSize[hEntity]+8 >= nOffset + 8) {
             memcpy(psShape->padfM, psSHP->pabyRec + nOffset, 8);        
             if (_host_big_endian) {
@@ -2106,11 +2016,12 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
         psShape->dfZMin = psShape->dfZMax = psShape->padfZ[0];
         psShape->dfMMin = psShape->dfMMax = psShape->padfM[0];
     } else {
-        return (FALSE);
+        return (SHAPEFILE_FALSE);
     }
 
-    return (TRUE);
+    return (SHAPEFILE_TRUE);
 }
+
 
 /**
  * SHPTypeName
@@ -2165,6 +2076,7 @@ const char * SHPTypeName(int nSHPType)
     }
 }
 
+
 /**
  * SHPPartTypeName
  */
@@ -2194,6 +2106,7 @@ const char * SHPPartTypeName(int nPartType)
     }
 }
 
+
 /**
  * SHPDestroyObject
  */
@@ -2210,6 +2123,7 @@ void SHPDestroyObject(SHPObject * psShape)
     }
 }
 
+
 /**
  * SHPDestroyObjectEx
  */
@@ -2224,6 +2138,7 @@ void  SHPDestroyObjectEx(SHPObjectEx * psShape)
         free(psShape);
     }
 }
+
 
 /**
  * Reset the winding of polygon objects to adhere to the specification
@@ -2257,7 +2172,7 @@ int SHPRewindObject(SHPObject *psObject)
         dfTestX = psObject->padfX[psObject->panPartStart[iOpRing]];
         dfTestY = psObject->padfY[psObject->panPartStart[iOpRing]];
 
-        bInner = FALSE;
+        bInner = SHAPEFILE_FALSE;
         for (iCheckRing = 0; iCheckRing < psObject->nParts; iCheckRing++) {
             int iEdge;
 
@@ -2343,7 +2258,8 @@ int SHPRewindObject(SHPObject *psObject)
     return bAltered;
 }
 
-extern int SHPRewindObjectEx (SHPObjectEx *psObject)
+
+int SHPRewindObjectEx (SHPObjectEx *psObject)
 {
  int  iOpRing, bAltered = 0;
 
@@ -2372,7 +2288,7 @@ extern int SHPRewindObjectEx (SHPObjectEx *psObject)
         dfTestX = psObject->pPoints[psObject->panPartStart[iOpRing]].x;
         dfTestY = psObject->pPoints[psObject->panPartStart[iOpRing]].y;
 
-        bInner = FALSE;
+        bInner = SHAPEFILE_FALSE;
         for (iCheckRing = 0; iCheckRing < psObject->nParts; iCheckRing++) {
             int iEdge;
 
@@ -2453,6 +2369,7 @@ extern int SHPRewindObjectEx (SHPObjectEx *psObject)
     return bAltered;
 }
 
+
 double SHPLengthOfXYs (double *padfX, double *padfY, int start, int end)
 {
     int i;
@@ -2469,6 +2386,7 @@ double SHPLengthOfXYs (double *padfX, double *padfY, int start, int end)
 
     return sum;
 }
+
 
 double SHPLengthOfPoints (SHPPointType *pPoints, int start, int end)
 {
@@ -2489,6 +2407,7 @@ double SHPLengthOfPoints (SHPPointType *pPoints, int start, int end)
     return sum;
 }
 
+
 double SHPAreaOfXYs (double *padfX, double *padfY, int start, int end, int *CCW)
 {
     int i;
@@ -2508,6 +2427,7 @@ double SHPAreaOfXYs (double *padfX, double *padfY, int start, int end, int *CCW)
     return sum/2;
 }
 
+
 double SHPAreaOfPoints (SHPPointType *pPoints, int start, int end, int *CCW)
 {
     int i;
@@ -2525,6 +2445,7 @@ double SHPAreaOfPoints (SHPPointType *pPoints, int start, int end, int *CCW)
 
     return sum/2;
 }
+
 
 double SHPObjectExGetLength (const SHPObjectEx *psObject)
 {
@@ -2563,6 +2484,7 @@ double SHPObjectExGetLength (const SHPObjectEx *psObject)
     return len;
 }
 
+
 double SHPObjectExGetArea (const SHPObjectEx *psObject)
 {
     int iPart;
@@ -2598,6 +2520,7 @@ double SHPObjectExGetArea (const SHPObjectEx *psObject)
 
     return area;
 }
+
 
 double SHPObjectGetLength (const SHPObject *psObject)
 {
@@ -2636,6 +2559,7 @@ double SHPObjectGetLength (const SHPObject *psObject)
     return len;
 }
 
+
 double SHPObjectGetArea (const SHPObject *psObject)
 {
     int iPart;
@@ -2670,6 +2594,7 @@ double SHPObjectGetArea (const SHPObject *psObject)
 
     return area;
 }
+
 
 void SHPObjectReversePoints (SHPObject *psObject)
 {
@@ -2719,6 +2644,7 @@ void SHPObjectReversePoints (SHPObject *psObject)
     }
 }
 
+
 void SHPObjectExReversePoints (SHPObjectEx *psObject)
 {
     if (psObject->nVertices > 1) {
@@ -2764,6 +2690,7 @@ void SHPObjectExReversePoints (SHPObjectEx *psObject)
     }
 }
 
+
 int SHPObjectValidatePolygon (SHPObject *psObject, int isCCW)
 {
     int ret;
@@ -2799,6 +2726,7 @@ int SHPObjectValidatePolygon (SHPObject *psObject, int isCCW)
     }
 }
 
+
 int SHPObjectExValidatePolygon (SHPObjectEx *psObject, int isCCW)
 {
     int ret;
@@ -2833,6 +2761,7 @@ int SHPObjectExValidatePolygon (SHPObjectEx *psObject, int isCCW)
         }
     }
 }
+
 
 int SHPObject2WKB (const SHPObject *psObject, void *wkbBuffer, double offsetX, double offsetY, double offsetZ, double offsetM)  
 {
@@ -2932,6 +2861,7 @@ int SHPObject2WKT (const SHPObject *psObject, char *wktBuffer, double offsetX, d
     return 0;
 }
 
+
 int SHPObjectEx2WKB (const SHPObjectEx *psObject, void *wkbBuffer, double offsetX, double offsetY, double offsetZ, double offsetM)
 {
     switch (psObject->nSHPType) {
@@ -2980,6 +2910,7 @@ int SHPObjectEx2WKB (const SHPObjectEx *psObject, void *wkbBuffer, double offset
 
     return 0;
 }
+
 
 int SHPObjectEx2WKT (const SHPObjectEx *psObject, char *wktBuffer, double offsetX, double offsetY, double offsetZ, double offsetM, int nDecimalsXY, int nDecimalsZ, int nDecimalsM)
 {

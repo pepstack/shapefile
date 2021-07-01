@@ -51,12 +51,7 @@
 #ifndef _SHP2JSON_H_INCLUDED
 #define _SHP2JSON_H_INCLUDED
 
-#ifdef _MSC_VER
- /* disable annoying warning: 4996 */
- #pragma warning (disable : 4996)
-#endif
-
-#include "shapefile.h"
+#include "shapefile_api.h"
 
 
 #endif /* _SHP2JSON_H_INCLUDED */

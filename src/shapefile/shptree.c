@@ -37,11 +37,6 @@
  *****************************************************************************/
 #include "shapefile_api.h"
 
-#include <math.h>
-#include <limits.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
 
 typedef struct shape_tree_node
 {
@@ -229,13 +224,13 @@ int SHPCheckBoundsOverlap (double *padfBox1Min, double *padfBox1Max, double *pad
     int iDim;
     for (iDim = 0; iDim < nDimension; iDim++) {
         if (padfBox2Max[iDim] < padfBox1Min[iDim]) {
-            return FALSE;
+            return SHAPEFILE_FALSE;
         }
         if (padfBox1Max[iDim] < padfBox2Min[iDim]) {
-            return FALSE;
+            return SHAPEFILE_FALSE;
         }
     }
-    return TRUE;
+    return SHAPEFILE_TRUE;
 }
 
 /**
@@ -248,25 +243,25 @@ static int SHPCheckObjectContained (
     double *padfBoundsMax)
 {
     if (psObject->dfXMin < padfBoundsMin[0] || psObject->dfXMax > padfBoundsMax[0]) {
-        return FALSE;
+        return SHAPEFILE_FALSE;
     }
     if (psObject->dfYMin < padfBoundsMin[1] || psObject->dfYMax > padfBoundsMax[1]) {
-        return FALSE;
+        return SHAPEFILE_FALSE;
     }
     if (nDimension == 2) {
-        return TRUE;
+        return SHAPEFILE_TRUE;
     }
     if (psObject->dfZMin < padfBoundsMin[2] || psObject->dfZMax < padfBoundsMax[2]) {
-        return FALSE;
+        return SHAPEFILE_FALSE;
     }
     if (nDimension == 3) {
-        return TRUE;
+        return SHAPEFILE_TRUE;
     }
     if (psObject->dfMMin < padfBoundsMin[3] || psObject->dfMMax < padfBoundsMax[3]) {
-        return FALSE;
+        return SHAPEFILE_FALSE;
     }
 
-    return TRUE;
+    return SHAPEFILE_TRUE;
 }
 
 /**
@@ -392,7 +387,7 @@ static int SHPTreeNodeAddShapeId (
         psTreeNode->papsShapeObj[psTreeNode->nShapeCount-1] = 0;
     }
 
-    return TRUE;
+    return SHAPEFILE_TRUE;
 }
 
 /**
