@@ -7,6 +7,9 @@
             "includePath": [
                 "${env:MSYS64_ROOT_BASH}/mingw64/include",
                 "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/src",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/src/common",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/src/common/win32",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/src/shapefile",
                 "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/libclogger/include",
                 "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/pthreads-w32/Pre-built.2/include"
             ],
@@ -22,10 +25,13 @@
             "name": "linux64 build config",
             "compilerPath": "/usr/bin/gcc",
             "includePath": [
-				"/usr/include",
-				"/usr/local/include",
-		        "${workspaceFolder}/src",
-                "${workspaceFolder}/deps/libclogger"
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/common",
+                "${workspaceFolder}/src/common/win32",
+                "${workspaceFolder}/src/shapefile",
+                "${workspaceFolder}/deps/libclogger/include"
             ],
             "defines": [
                 "_DEBUG"

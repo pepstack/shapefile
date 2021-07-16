@@ -15,7 +15,7 @@
             "stopAtEntry": true,
             "cwd": "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "gdb",
             "miDebuggerPath": "${env:MSYS64_ROOT_BASH}/usr/bin/gdb.exe",
             "preLaunchTask": "mingw-make-debug-x64",

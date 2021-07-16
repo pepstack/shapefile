@@ -14,7 +14,7 @@ extern "C" {
 #include <common/emerglog.h>
 
 #ifdef HAS_LIBCLOGGER
-#   include <clogger/logger_api.h>
+#   include <clogger/logger_helper.h>
 #endif
 
 /* using pthread or pthread-w32 */

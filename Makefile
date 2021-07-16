@@ -290,6 +290,8 @@ clean:
 	-rm -rf ./msvc/test_shapefiledll/target
 	-rm -f test_shapefile.exe.$(OSARCH)
 	-rm -f test_shapefiledll.exe.$(OSARCH)
+	-rm -f test_shapefile
+	-rm -f test_shapefiledll
 	-rm -f ./msvc/*.VC.db
 
 

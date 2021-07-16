@@ -38,6 +38,15 @@
 #include "shapefile_i.h"
 
 
+const char * shapefile_lib_version(const char **_libname)
+{
+    if (_libname) {
+        *_libname = LIBNAME;
+    }
+    return LIBVERSION;
+}
+
+
 /**
  * Write out a header for the .shp and .shx files as well as the
  *   contents of the index (.shx) file

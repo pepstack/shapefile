@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-	<ClCompile Include="..\..\src\apps\test_shapefile\app_incl.h" />
+    <ClCompile Include="..\..\src\apps\test_shapefile\app_incl.h" />
     <ClCompile Include="..\..\src\apps\test_shapefile\app_main.c" />
     <ClCompile Include="..\..\src\common\win32\getoptw.c" />
     <ClCompile Include="..\..\src\common\win32\getopt_longw.c" />
@@ -30,7 +30,7 @@
     <None Include="update.bat" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{476EF274-D91B-419D-9C70-C7EEE59FB991}</ProjectGuid>
+    <ProjectGuid>{714179A7-755F-4DA0-9447-78D45450EE74}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>test_shapefile</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -85,28 +85,28 @@
     <IncludePath>..\..\src;..\..\dist\libshapefile-0.0.1\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\dist\libshapefile-0.0.1\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libshapefile-0.0.1\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\src;..\..\dist\libshapefile-0.0.1\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\dist\libshapefile-0.0.1\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libshapefile-0.0.1\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\src;..\..\dist\libshapefile-0.0.1\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\dist\libshapefile-0.0.1\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libshapefile-0.0.1\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\src;..\..\dist\libshapefile-0.0.1\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\dist\libshapefile-0.0.1\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\libshapefile-0.0.1\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

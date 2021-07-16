@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F70A70E4-43F8-43E9-9EE3-61F5AC1EB7CD}</ProjectGuid>
+    <ProjectGuid>{A39394CD-8694-4864-A880-54DB63954593}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libshapefile_dll</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -73,25 +73,25 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../../src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../../src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../../src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../../src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -208,13 +208,18 @@
     <ClInclude Include="..\..\src\shapefile\shapefile_def.h" />
     <ClInclude Include="..\..\src\shapefile\shapefile_i.h" />
     <ClInclude Include="..\..\src\common\unitypes.h" />
+    <ClInclude Include="..\..\src\shapefile\shp2json.h" />
+    <ClInclude Include="..\..\src\shapefile\shp2wkb.h" />
+    <ClInclude Include="..\..\src\shapefile\shp2wkt.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\shapefile\dbfopen.c" />
     <ClCompile Include="..\..\src\shapefile\shapefile.c" />
+    <ClCompile Include="..\..\src\shapefile\shptree.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

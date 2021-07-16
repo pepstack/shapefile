@@ -36,6 +36,15 @@ int main(int argc, char *argv[])
     app_logger = logger_manager_load(NULL);
 #endif
 
+    const char *libname;
+    const char *libversion = shapefile_lib_version(&libname);
+
+#ifdef HAS_LIBCLOGGER
+    LOGGER_INFO(app_logger, "starting. lib: %s-%s", libname, libversion);
+#else
+    printf("starting. lib: %s-%s", libname, libversion);
+#endif
+
     // TODO:
 
 

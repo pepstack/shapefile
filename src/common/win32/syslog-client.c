@@ -52,7 +52,7 @@
   static char UTF8_BOM[] = {'\0'};
 #endif
 
-static BOOL initialized = 0;
+static BOOL initialized = FALSE;
 static int log_mask = 0xFF;
 
 static char syslog_ident[MAX_IDENT_LENGTH + 1];
@@ -198,7 +198,7 @@ void closelog(void)
     }
     closesocket( sock );
     WSACleanup();
-    initialized = 0;
+    initialized = FALSE;
 }
 
 /******************************************************************************
@@ -208,7 +208,7 @@ void closelog(void)
  */
 void openlog( const char* ident, int option, int facility )
 {
-    BOOL failed = 1, wsa_initialized = 0;
+    BOOL failed = TRUE, wsa_initialized = FALSE;
     WSADATA wsd;
     SOCKADDR_IN sa_local;
     DWORD n;
@@ -250,7 +250,7 @@ void openlog( const char* ident, int option, int facility )
     if ( WSAStartup( MAKEWORD( 2, 2 ), &wsd )) {
         goto done;
     }
-    wsa_initialized = 1;
+    wsa_initialized = TRUE;
 
     init_logger_addr();
 
@@ -297,7 +297,7 @@ void openlog( const char* ident, int option, int facility )
     syslog_ident[MAX_IDENT_LENGTH] = 0;
 
     syslog_facility = facility;
-    failed = 0;
+    failed = FALSE;
 
 done:
     if ( failed ) {
@@ -457,13 +457,13 @@ int main( int argc, char* argv[] )
         return 1;
     }
 
-    hRxEvent = CreateEvent( NULL, 0, 0, NULL );
+    hRxEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
     if ( !hRxEvent ) {
         fprintf( stderr, "CreateEvent() failed, error %lu\n", GetLastError());
         goto done;
     }
 
-    hAckEvent = CreateEvent(NULL, 0, 1, NULL);
+    hAckEvent = CreateEvent( NULL, FALSE, TRUE, NULL );
     if ( !hAckEvent ) {
         fprintf( stderr, "CreateEvent() failed, error %lu\n", GetLastError());
         goto done;

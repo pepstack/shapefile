@@ -2,17 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
-      <UniqueIdentifier>{551E4B03-1D29-41AA-933D-C65F99A75523}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="resources">
-      <UniqueIdentifier>{C1410CD6-B969-4CE3-9722-9106D895FF39}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <UniqueIdentifier>{775F30A7-5729-4405-8FEF-938D2000D680}</UniqueIdentifier>
     </Filter>
 	<Filter Include="common">
-      <UniqueIdentifier>{54BA3BD0-6494-4BA9-8CAA-3AAD1A7C588B}</UniqueIdentifier>
+      <UniqueIdentifier>{A39DC6D2-97E9-47DA-9074-172FAB07BD8D}</UniqueIdentifier>
     </Filter>
     <Filter Include="common\win32">
-      <UniqueIdentifier>{19E63681-C26C-4874-A6FB-34B0FCF3B051}</UniqueIdentifier>
+      <UniqueIdentifier>{3F4E924E-C0B8-45EA-9A0B-3B6366D69DF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{1ED43655-64C1-4D25-AF92-D2C4FAF4AD67}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>

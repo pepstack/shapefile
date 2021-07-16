@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.10
  * @create     2017-08-28 11:12:10
- * @update     2021-06-22 17:59:46
+ * @update     2021-07-12 21:59:46
  */
 #ifndef _CSTRBUF_H_
 #define _CSTRBUF_H_
@@ -240,12 +240,12 @@ char * cstr_find_chrs (char * str, int len, const char *chrs, int nch)
 /**
  * int isspace(char c);
  *   Standard white-space characters are:
- *    ' '   (0x20)	space (SPC) arcii=32
- *    '\t'	(0x09)	horizontal tab (TAB)
- *    '\n'	(0x0a)	newline (LF)
- *    '\v'	(0x0b)	vertical tab (VT)
- *    '\f'	(0x0c)	feed (FF)
- *    '\r'	(0x0d)	carriage return (CR)
+ *    ' '   (0x20)  space (SPC) arcii=32
+ *    '\t'  (0x09)  horizontal tab (TAB)
+ *    '\n'  (0x0a)  newline (LF)
+ *    '\v'  (0x0b)  vertical tab (VT)
+ *    '\f'  (0x0c)  feed (FF)
+ *    '\r'  (0x0d)  carriage return (CR)
  */
 NOWARNING_UNUSED(static)
 char * cstr_Ltrim_whitespace (char *str)
@@ -900,11 +900,12 @@ int cstr_containwith (const char *str, int count, const char *sub, int sublen)
     }
 
     if (str && sub && sublen <= count) {
-        char *at = strstr((char *)str, sub);
-        if (! at) {
-            return -1;
+        int i = 0;
+        for (; i <= count - sublen; i++) {
+            if (! memcmp(&str[i], sub, sublen)) {
+                return i;
+            }
         }
-        return (int)(at - str);
     }
 
     return -1;

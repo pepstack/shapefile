@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-
-    <Filter Include="common">
-      <UniqueIdentifier>{C7B07EAE-7036-47D6-9789-8194E59B5DFC}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shapefile">
-      <UniqueIdentifier>{8917E1C0-99E1-4E71-90FA-8B0BC92E01E9}</UniqueIdentifier>
+      <UniqueIdentifier>{1A807CD6-DBEA-4648-8D9D-59A27734D56E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{38AE6793-ABCC-4098-8CD1-A15C86DB0794}</UniqueIdentifier>
     </Filter>
     <Filter Include="resources">
-      <UniqueIdentifier>{BB9603FD-1C6E-421F-BDB9-8452658D5D7A}</UniqueIdentifier>
+      <UniqueIdentifier>{E26B4BB4-C385-4DE7-9B10-AB91F81BAFA7}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
@@ -26,6 +25,15 @@
     <ClInclude Include="..\..\src\shapefile\shapefile_i.h">
       <Filter>shapefile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2json.h">
+      <Filter>shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2wkb.h">
+      <Filter>shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2wkt.h">
+      <Filter>shapefile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="prepare.bat" />
@@ -33,6 +41,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\shapefile\shapefile.c">
+      <Filter>shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shapefile\dbfopen.c">
+      <Filter>shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shapefile\shptree.c">
       <Filter>shapefile</Filter>
     </ClCompile>
   </ItemGroup>
