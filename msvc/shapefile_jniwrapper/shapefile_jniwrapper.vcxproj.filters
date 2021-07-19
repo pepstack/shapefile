@@ -10,11 +10,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\jni\src\main\java\com_github_jni_JNIWrapper.h">
-      <Filter>jni</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="shapefile_jniwrapper.c">
       <Filter>jni</Filter>
     </ClCompile>
@@ -22,5 +17,10 @@
   <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\jni\src\main\java\com_github_jni_libshapefile_JNIWrapper.h">
+      <Filter>jni</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

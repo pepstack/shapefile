@@ -4,12 +4,18 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-    extends TestCase
+public class AppTest extends TestCase
 {
+    /**
+     *  Add JNIWrapper as the following
+     */
+    private static class LibshapefileJNIWrapper extends com.github.jni.libshapefile.JNIWrapper {}
+
+
     /**
      * Create the test case
      *
@@ -20,6 +26,7 @@ public class AppTest
         super( testName );
     }
 
+
     /**
      * @return the suite of tests being tested
      */
@@ -28,17 +35,16 @@ public class AppTest
         return new TestSuite( AppTest.class );
     }
 
+
     /**
      * Rigourous Test :-)
      */
     public void testApp()
     {
-		System.out.println("java.class.path=" + System.getProperty("java.class.path"));
-		System.out.println("java.library.path=" + System.getProperty("java.library.path"));
+        System.out.println("java.class.path=" + System.getProperty("java.class.path"));
+        System.out.println("java.library.path=" + System.getProperty("java.library.path"));
 
-		JNIWrapper jniCall = new JNIWrapper();
-
-		jniCall.JNI_shapefile_lib_version();
+        (new LibshapefileJNIWrapper()).JNI_shapefile_lib_version();
 
         assertTrue( true );
     }

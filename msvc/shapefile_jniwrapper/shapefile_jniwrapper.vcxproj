@@ -195,14 +195,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\jni\src\main\java\com_github_jni_JNIWrapper.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="shapefile_jniwrapper.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="prepare.bat" />
     <None Include="update.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\jni\src\main\java\com_github_jni_libshapefile_JNIWrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
