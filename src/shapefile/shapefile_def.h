@@ -1,6 +1,15 @@
-/******************************************************************************
- * shapefile_def.h
+/**
+ * @file shapefile_def.h
+ * @brief shapefile public definitions.
  *
+ * @author cheungmine@qq.com
+ * @version
+ * @date
+ * @note
+ * @since
+ */
+
+/******************************************************************************
  * v 1.4 2005/03/24 14:26:44
  *
  * Project:  Shapelib

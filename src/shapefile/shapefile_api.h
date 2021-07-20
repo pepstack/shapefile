@@ -1,6 +1,15 @@
-/******************************************************************************
- * shapefile_api.h
+/**
+ * @file shapefile_api.h
+ * @brief shapefile public api.
  *
+ * @author cheungmine@qq.com
+ * @version
+ * @date
+ * @note
+ * @since
+ */
+
+/******************************************************************************
  * v 1.4 2005/03/24 14:26:44
  *
  * Project:  Shapelib
