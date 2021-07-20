@@ -225,7 +225,7 @@ $(SHAPEFILE_STATIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 $(SHAPEFILE_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	$(CC) $(CFLAGS) -shared \
 		-Wl,--soname=$(SHAPEFILE_DYNAMIC_LIB) \
-		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/libs:$(PREFIX)/libs/lib' \
 		-o $@ \
 		$^ \
 		$(LDFLAGS) \
@@ -251,7 +251,7 @@ test_shapefile.exe.$(OSARCH): $(APPS_DIR)/test_shapefile/app_main.c
 test_shapefiledll.exe.$(OSARCH): $(APPS_DIR)/test_shapefile/app_main.c
 	@echo Building test_shapefiledll.exe.$(OSARCH)
 	$(CC) $(CFLAGS) $< $(INCDIRS) \
-	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/libs:$(PREFIX)/libs/lib' \
 	-o $@ \
 	$(SHAPEFILE_DYNAMIC_LIB) \
 	$(LDFLAGS) \
