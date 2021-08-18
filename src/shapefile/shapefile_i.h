@@ -55,6 +55,9 @@ static const char LIBVERSION[] = "0.0.1";
 #include <common/memapi.h>
 #include <common/emerglog.h>
 
+#define RTREE_DIMS  2
+#include <common/rtree.h>
+
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
@@ -90,6 +93,9 @@ typedef struct  _SHPInfo
 {
     FILE        *fpSHP;
     FILE        *fpSHX;
+
+    /* r-tree for RectXY */
+    rtree_root  hEnvTree;
 
     int         nShapeType; /* SHPT_* */
     int         nFileSize;  /* SHP file */
@@ -135,6 +141,12 @@ typedef struct _DBFInfo
     char        *pReturnTuple;
     int         nTupleLen;
 } DBFInfo;
+
+
+typedef struct _SHPRectTree
+{
+    rtree_root tree;
+} SHPRectTree_t;
 
 
 /**

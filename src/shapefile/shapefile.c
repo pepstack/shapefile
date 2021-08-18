@@ -419,8 +419,8 @@ SHPHandle SHPOpen (const char * pszLayer, const char * pszAccess)
  */
 void SHPClose(SHPHandle psSHP)
 {
-    if (psSHP == 0) {
-        return;
+    if (psSHP->hEnvTree) {
+        rtree_destroy(psSHP->hEnvTree);
     }
 
     /* Update the header if we have modified anything */
@@ -1529,10 +1529,6 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds)
 {
     int nSHPType;
 
-    if (hEntity < 0 || hEntity >= psSHP->nRecords) {
-        return(SHPT_NULL);
-    }
-
     if (psSHP->panRecSize[hEntity]+8 > psSHP->nBufSize) {
         psSHP->nBufSize = psSHP->panRecSize[hEntity]+8;
         psSHP->pabyRec = (ub1 *) SfRealloc(psSHP->pabyRec,psSHP->nBufSize);
@@ -1695,6 +1691,103 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds)
         Bounds->YMax = Bounds->YMin;
         Bounds->ZMax = Bounds->ZMin;
         Bounds->MMax = Bounds->MMin;
+    } else {
+        return(SHPT_NULL);
+    }
+
+    return(nSHPType);
+}
+
+
+SHAPEFILE_API int SHPReadObjectEnvelope(SHPHandle psSHP, int hEntity, SHPEnvelope *env)
+{
+    int nSHPType;
+
+    if (psSHP->panRecSize[hEntity]+8 > psSHP->nBufSize) {
+        psSHP->nBufSize = psSHP->panRecSize[hEntity]+8;
+        psSHP->pabyRec = (ub1 *) SfRealloc(psSHP->pabyRec,psSHP->nBufSize);
+    }
+
+    if (fseek(psSHP->fpSHP, psSHP->panRecOffset[hEntity], 0) != 0 ||
+        fread(psSHP->pabyRec, psSHP->panRecSize[hEntity]+8, 1, psSHP->fpSHP) != 1) {
+        return (SHPT_NULL);
+    }
+
+    memcpy(&nSHPType, psSHP->pabyRec + 8, 4);
+    if (_host_big_endian) {
+        BO_swap_dword(&(nSHPType));
+    }
+
+    if (nSHPType == SHPT_POLYGON ||
+        nSHPType == SHPT_ARC ||
+        nSHPType == SHPT_POLYGONZ ||
+        nSHPType == SHPT_POLYGONM ||
+        nSHPType == SHPT_ARCZ ||
+        nSHPType == SHPT_ARCM || 
+        nSHPType == SHPT_MULTIPATCH) {
+        int nPoints, nParts;
+
+        memcpy(&nPoints, psSHP->pabyRec + 40 + 8, 4);
+        memcpy(&nParts, psSHP->pabyRec + 36 + 8, 4);
+
+        if (_host_big_endian) {
+            BO_swap_dword(&nPoints);
+            BO_swap_dword(&nParts);
+        }
+
+        if (nPoints <= 0) {
+            return (SHPT_NULL);
+        }
+
+        memcpy(&(env->XMin), psSHP->pabyRec + 8 +  4, 8);
+        memcpy(&(env->YMin), psSHP->pabyRec + 8 + 12, 8);
+        memcpy(&(env->XMax), psSHP->pabyRec + 8 + 20, 8);
+        memcpy(&(env->YMax), psSHP->pabyRec + 8 + 28, 8);
+
+        if (_host_big_endian) {
+            BO_swap_qword(&(env->XMin));
+            BO_swap_qword(&(env->YMin));
+            BO_swap_qword(&(env->XMax));
+            BO_swap_qword(&(env->YMax));
+        }
+    } else if (nSHPType == SHPT_MULTIPOINT ||
+        nSHPType == SHPT_MULTIPOINTM || 
+        nSHPType == SHPT_MULTIPOINTZ) {
+        int nPoints;
+        memcpy(&nPoints, psSHP->pabyRec + 44, 4);
+ 
+        if (_host_big_endian) {
+            BO_swap_dword(&nPoints);
+        }
+  
+        if (nPoints <= 0) {
+            return (SHPT_NULL);
+        }
+
+        memcpy(&(env->XMin), psSHP->pabyRec + 8 +  4, 8);
+        memcpy(&(env->YMin), psSHP->pabyRec + 8 + 12, 8);
+        memcpy(&(env->XMax), psSHP->pabyRec + 8 + 20, 8);
+        memcpy(&(env->YMax), psSHP->pabyRec + 8 + 28, 8);
+
+        if (_host_big_endian) {
+            BO_swap_qword(&(env->XMin));
+            BO_swap_qword(&(env->YMin));
+            BO_swap_qword(&(env->XMax));
+            BO_swap_qword(&(env->YMax));
+        }
+    } else if (nSHPType == SHPT_POINT ||
+        nSHPType == SHPT_POINTM || 
+        nSHPType == SHPT_POINTZ) {
+        memcpy(&env->XMin, psSHP->pabyRec + 12, 8);
+        memcpy(&env->YMin, psSHP->pabyRec + 20, 8);
+
+        if (_host_big_endian) {
+            BO_swap_qword(&env->XMin);
+            BO_swap_qword(&env->YMin);
+        }
+
+        env->XMax = env->XMin;
+        env->YMax = env->YMin;
     } else {
         return(SHPT_NULL);
     }
@@ -2968,4 +3061,61 @@ int SHPObjectEx2WKT (const SHPObjectEx *psObject, char *wktBuffer, double offset
     }
 
     return 0;
+}
+
+
+/*************************************************************************
+ *                             SHAPES MBR Tree API
+ ************************************************************************/
+SHAPEFILE_API void SHPEnvelopeTreeReset (SHPHandle hSHP, const SHPEnvelope *envfilter)
+{
+    rtree_root rt = hSHP->hEnvTree;
+    if (rt) {
+        hSHP->hEnvTree = NULL;
+        rtree_destroy(rt);
+    }
+    hSHP->hEnvTree = rtree_create((const rtree_mbr_t *)envfilter, NULL);
+}
+
+
+SHAPEFILE_API int SHPEnvelopeTreeAddShapeId(SHPHandle hSHP, int shpId, const SHPEnvelope *filter)
+{
+    SHPEnvelope env;
+    int ret = 0;
+
+    const rtree_mbr_t *mbr = rtree_get_mbr_limit(hSHP->hEnvTree);
+
+    if (SHPReadObjectEnvelope(hSHP, shpId, &env) != SHPT_NULL) {
+        if (!mbr && !filter) {
+            ret = 1;
+        } else if (mbr && filter) {
+            if (rtree_mbr_overlap(mbr, (const rtree_mbr_t *)&env) && rtree_mbr_overlap((const rtree_mbr_t *)filter, (const rtree_mbr_t *)&env)) {
+                ret = 1;
+            }
+        } else if (mbr) {
+            if (rtree_mbr_overlap(mbr, (const rtree_mbr_t *)&env)) {
+                ret = 1;
+            }
+        } else {
+            if (rtree_mbr_overlap((const rtree_mbr_t *)filter, (const rtree_mbr_t *)&env)) {
+                ret = 1;
+            }
+        }
+
+        if (ret) {
+            rtree_insert_mbr(hSHP->hEnvTree,
+                (rtree_mbr_t *)&env,          //  the mbr being inserted
+                RTREE_INT_TO_PTR(shpId + 1),  //  i+1 is mbr ID. ID MUST NEVER BE ZERO
+                0);                           //  always zero which means to add from the root
+        }
+    }
+
+    // 1: success, 0: error
+    return ret;
+}
+
+
+int SHPEnvelopeTreeSearch(SHPHandle hSHP, const SHPEnvelope *env, int(*searchCallback)(void*, void *), void *userarg)
+{
+    return rtree_search_mbr(hSHP->hEnvTree, (const rtree_mbr_t *)env, userarg, searchCallback);
 }

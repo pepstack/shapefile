@@ -222,6 +222,7 @@ struct PointXY
     double y;
 };
 
+
 typedef struct LinearRing
 {
     int     numPoints;
@@ -284,6 +285,8 @@ typedef struct WKBMultiPolygon
 #pragma pack()
 
 typedef struct _DBFInfo *DBFHandle;
+typedef struct _SHPRectTree * SHPRectTree;
+
 
 typedef enum {
     FTString   = 0,

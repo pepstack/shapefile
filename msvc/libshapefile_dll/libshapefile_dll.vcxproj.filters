@@ -34,6 +34,9 @@
     <ClInclude Include="..\..\src\shapefile\shp2wkt.h">
       <Filter>shapefile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\common\rtree.h">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="prepare.bat" />
@@ -48,6 +51,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\shapefile\shptree.c">
       <Filter>shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\rtree.c">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

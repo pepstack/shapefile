@@ -204,6 +204,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\common\rtree.h" />
     <ClInclude Include="..\..\src\shapefile\shapefile_api.h" />
     <ClInclude Include="..\..\src\shapefile\shapefile_def.h" />
     <ClInclude Include="..\..\src\shapefile\shapefile_i.h" />
@@ -217,6 +218,7 @@
     <None Include="update.bat" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\common\rtree.c" />
     <ClCompile Include="..\..\src\shapefile\dbfopen.c" />
     <ClCompile Include="..\..\src\shapefile\shapefile.c" />
     <ClCompile Include="..\..\src\shapefile\shptree.c" />

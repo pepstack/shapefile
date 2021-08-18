@@ -72,6 +72,8 @@ SHAPEFILE_API int SHPReadObjectEx (SHPHandle psSHP, int iShape, SHPObjectEx *psS
 
 SHAPEFILE_API int SHPReadObjectBounds (SHPHandle hSHP, int iShape, SHPBounds *Bounds);
 
+SHAPEFILE_API int SHPReadObjectEnvelope (SHPHandle hSHP, int iShape, SHPEnvelope *rect);
+
 SHAPEFILE_API int SHPWriteObject (SHPHandle hSHP, int iShape, SHPObject *psObject);
 
 SHAPEFILE_API void SHPDestroyObject (SHPObject * psObject);
@@ -177,6 +179,11 @@ SHAPEFILE_API int SHPObjectEx2WKT (const SHPObjectEx *psObject, char *wktBuffer,
     double offsetX, double offsetY, double offsetZ, double offsetM,
     int nDecimalsXY, int nDecimalsZ, int nDecimalsM);
 
+
+/*************************************************************************
+ *                             SHPTree Index API
+ ************************************************************************/
+
 SHAPEFILE_API SHPTreeHandle SHPCreateTree (SHPHandle hSHP, int nDimension, int nMaxDepth, double *padfBoundsMin, double *padfBoundsMax);
 
 SHAPEFILE_API void  SHPDestroyTree (SHPTreeHandle hTree);
@@ -188,6 +195,16 @@ SHAPEFILE_API void  SHPTreeTrimExtraNodes (SHPTreeHandle hTree);
 SHAPEFILE_API int*  SHPTreeFindLikelyShapes (SHPTreeHandle hTree, double *padfBoundsMin, double *padfBoundsMax, int *pnShapeCount);
 
 SHAPEFILE_API int SHPCheckBoundsOverlap (double *padfBox1Min, double *padfBox1Max, double *padfBox2Min, double *padfBox2Max, int nDimension);
+
+
+/*************************************************************************
+ *                             SHAPES MBR Tree API
+ ************************************************************************/
+SHAPEFILE_API void SHPEnvelopeTreeReset (SHPHandle hSHP, const SHPEnvelope *envfilter);
+
+SHAPEFILE_API int SHPEnvelopeTreeAddShapeId (SHPHandle hSHP, int shpId, const SHPEnvelope *envfilter);
+
+SHAPEFILE_API int SHPEnvelopeTreeSearch (SHPHandle hSHP, const SHPEnvelope *env, int(* searchCallback)(void*,  void *), void *userarg);
 
 
 /*************************************************************************
