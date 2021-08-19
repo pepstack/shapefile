@@ -70,9 +70,9 @@ SHAPEFILE_API SHPObject* SHPReadObject (SHPHandle hSHP, int iShape);
 
 SHAPEFILE_API int SHPReadObjectEx (SHPHandle psSHP, int iShape, SHPObjectEx *psShape);
 
-SHAPEFILE_API int SHPReadObjectBounds (SHPHandle hSHP, int iShape, SHPBounds *Bounds);
+SHAPEFILE_API int SHPReadObjectBounds (SHPHandle hSHP, int iShape, SHPBounds *Bounds, double *pointEpsilon);
 
-SHAPEFILE_API int SHPReadObjectEnvelope (SHPHandle hSHP, int iShape, SHPEnvelope *rect);
+SHAPEFILE_API int SHPReadObjectEnvelope (SHPHandle hSHP, int iShape, SHPEnvelope *rect, double *pointEpsilon);
 
 SHAPEFILE_API int SHPWriteObject (SHPHandle hSHP, int iShape, SHPObject *psObject);
 

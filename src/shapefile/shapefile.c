@@ -1523,7 +1523,7 @@ SHPObject * SHPReadObject(SHPHandle psSHP, int hEntity)
 /**
  * return SHPType
  */
-int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds)
+int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds, double *pointEpsilon)
 {
     int nSHPType;
 
@@ -1685,10 +1685,18 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds)
             }
         }
 
-        Bounds->XMax = Bounds->XMin;
-        Bounds->YMax = Bounds->YMin;
-        Bounds->ZMax = Bounds->ZMin;
-        Bounds->MMax = Bounds->MMin;
+        if (pointEpsilon) {
+            double Epsilon = *pointEpsilon;
+            Bounds->XMax = Bounds->XMin + Epsilon;
+            Bounds->YMax = Bounds->YMin + Epsilon;
+            Bounds->ZMax = Bounds->ZMin + Epsilon;
+            Bounds->MMax = Bounds->MMin + Epsilon;
+        } else {
+            Bounds->XMax = Bounds->XMin;
+            Bounds->YMax = Bounds->YMin;
+            Bounds->ZMax = Bounds->ZMin;
+            Bounds->MMax = Bounds->MMin;
+        }
     } else {
         return(SHPT_NULL);
     }
@@ -1697,7 +1705,7 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds)
 }
 
 
-SHAPEFILE_API int SHPReadObjectEnvelope(SHPHandle psSHP, int hEntity, SHPEnvelope *env)
+SHAPEFILE_API int SHPReadObjectEnvelope(SHPHandle psSHP, int hEntity, SHPEnvelope *env, double *pointEpsilon)
 {
     int nSHPType;
 
@@ -1784,8 +1792,14 @@ SHAPEFILE_API int SHPReadObjectEnvelope(SHPHandle psSHP, int hEntity, SHPEnvelop
             BO_swap_qword(&env->YMin);
         }
 
-        env->XMax = env->XMin;
-        env->YMax = env->YMin;
+        if (pointEpsilon) {
+            double Epsilon = *pointEpsilon;
+            env->XMax = env->XMin + Epsilon;
+            env->YMax = env->YMin + Epsilon;
+        } else {
+            env->XMax = env->XMin;
+            env->YMax = env->YMin;
+        }
     } else {
         return(SHPT_NULL);
     }
