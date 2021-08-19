@@ -31,7 +31,6 @@
 #include <math.h>
 #include <assert.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -74,86 +73,86 @@ extern "C" {
 /**
  * public type definitions
  */
-typedef struct _rtree_node_t*  rtree_node;
-typedef struct _rtree_root_t*  rtree_root;
+typedef struct _RTreeNode*  RTREE_NODE;
+typedef struct _RTreeRoot*  RTREE_ROOT;
 
 
 typedef struct
 {
     /* [Min1, Min2, ..., MinN, Max1, Max2, ..., MaxN] */
     RTREE_REAL bound[RTREE_SIDES];
-} rtree_mbr_t;
+} RTREE_MBR;
 
 
 typedef struct
 {
-    rtree_mbr_t	mbr;
+    RTREE_MBR	mbr;
 
     /* mbr id */
-    struct _rtree_node_t *child;
-} rtree_branch_t;
+    RTREE_NODE child;
+} RTREE_BRANCH;
 
 
 /**
  * Initialize a rectangle to have all 0 coordinates.
  */
-void rtree_mbr_init(rtree_mbr_t *mbr);
+void RTreeMbrInit(RTREE_MBR *mbr);
 
 
 /**
  * Return a mbr whose first low side is higher than its opposite side -
  *   interpreted as an undefined mbr.
  */
-rtree_mbr_t rtree_mbr_null(void);
+RTREE_MBR RTreeMbrNull(void);
 
 
 /**
  * Print out the data for a rectangle.
  */
-void rtree_mbr_print(rtree_mbr_t *mbr, int depth);
+void RTreeMbrPrint(RTREE_MBR *mbr, int depth);
 
 
 /**
  * Calculate the 2-dimensional area of a rectangle
  */
-RTREE_REAL rtree_mbr_area(rtree_mbr_t *mbr);
+RTREE_REAL RTreeMbrArea(RTREE_MBR *mbr);
 
 
 /**
  * Calculate the n-dimensional volume of a rectangle
  */
-RTREE_REAL rtree_mbr_volume(rtree_mbr_t *mbr);
+RTREE_REAL RTreeMbrVolume(RTREE_MBR *mbr);
 
 
 /**
  * Calculate the n-dimensional volume of the bounding sphere of a rectangle
- * The exact volume of the bounding sphere for the given rtree_mbr_t.
+ * The exact volume of the bounding sphere for the given RTREE_MBR.
  */
-RTREE_REAL rtree_mbr_spherical_volume(rtree_mbr_t *mbr);
+RTREE_REAL RTreeMbrSpherVolume(RTREE_MBR *mbr);
 
 
 /**
  * Calculate the n-dimensional surface area of a rectangle
  */
-RTREE_REAL rtree_mbr_surface_area(rtree_mbr_t *mbr);
+RTREE_REAL RTreeMbrSurfaceArea(RTREE_MBR *mbr);
 
 
 /**
  * Combine two rectangles, make one that includes both.
  */
-rtree_mbr_t rtree_mbr_union(rtree_mbr_t *rc1, rtree_mbr_t *rc2);
+RTREE_MBR RTreeMbrCombine(RTREE_MBR *rc1, RTREE_MBR *rc2);
 
 
 /**
  * Decide whether two rectangles overlap.
  */
-int rtree_mbr_overlap(const rtree_mbr_t *rc1, const rtree_mbr_t *rc2);
+int RTreeMbrOverlapped(const RTREE_MBR *rc1, const RTREE_MBR *rc2);
 
 
 /**
  * Decide whether rectangle r is contained in rectangle s.
  */
-int rtree_mbr_contained(const rtree_mbr_t *r, const rtree_mbr_t *s);
+int RTreeMbrContained(const RTREE_MBR *r, const RTREE_MBR *s);
 
 
 /**
@@ -162,34 +161,34 @@ int rtree_mbr_contained(const rtree_mbr_t *r, const rtree_mbr_t *s);
  * Old node is one of the new ones, and one really new one is created.
  * Tries more than one method for choosing a partition, uses best result.
  */
-void rtree_split_node(rtree_root root, rtree_node node, rtree_branch_t *br, rtree_node *new_node);
+void RTreeSplitNode(RTREE_ROOT root, RTREE_NODE node, RTREE_BRANCH *br, RTREE_NODE *new_node);
 
 
 /**
- * Initialize a rtree_node_t structure.
+ * Initialize a RTreeNode structure.
  */
-void rtree_init_node( rtree_node node );
+void RTreeInitNode( RTREE_NODE node );
 
 
 /**
  * Make a new node and initialize to have all branch cells empty.
  */
-rtree_node rtree_new_node(void);
+RTREE_NODE RTreeNewNode(void);
 
 
-void rtree_free_node( rtree_node node );
+void RTreeFreeNode( RTREE_NODE node );
 
 
 /**
  * Print out the data in a node.
  */
-void rtree_print_node(rtree_node node, int depth);
+void RTreePrintNode(RTREE_NODE node, int depth);
 
 
 /**
  * Find the smallest rectangle that includes all rectangles in branches of a node.
  */
-rtree_mbr_t rtree_node_cover(rtree_node node);
+RTREE_MBR RTreeNodeCover(RTREE_NODE node);
 
 
 /**
@@ -199,7 +198,7 @@ rtree_mbr_t rtree_node_cover(rtree_node node);
  * In case of a tie, pick the one which was smaller before, to get
  * the best resolution when searching.
  */
-int rtree_pick_branch(rtree_mbr_t *mbr, rtree_node node);
+int RTreePickBranch(RTREE_MBR *mbr, RTREE_NODE node);
 
 
 /**
@@ -208,44 +207,38 @@ int rtree_pick_branch(rtree_mbr_t *mbr, rtree_node node);
  * Returns 1 if node split, sets *new_node to address of new node.
  * Old node updated, becomes one of two.
  */
-int rtree_add_branch(rtree_root root, rtree_branch_t *br, rtree_node node, rtree_node *new_node);
+int RTreeAddBranch(RTREE_ROOT root, RTREE_BRANCH *br, RTREE_NODE node, RTREE_NODE *new_node);
 
 
 /**
  * Disconnect a dependent node.
  */
-void rtree_cut_branch(rtree_node node, int i);
+void RTreeCutBranch(RTREE_NODE node, int i);
 
 
 /**
  * Destroy (free) node recursively.
  */
-void rtree_delete_node(rtree_node node);
+void RTreeDelNode(RTREE_NODE node);
 
 
 /**
  * Create a new rtree index, empty. Consists of a single node.
  */
-rtree_root rtree_create(const rtree_mbr_t *limit, int (*RTreeSearchCallback)(void*, void*));
+RTREE_ROOT RTreeCreate(int (*RTreeSearchCallback)(void*, void*));
 
 
 /**
  * Destroy a rtree root must be a root of rtree. Free all memory.
  */
-void rtree_destroy(rtree_root root);
-
-
-/**
- * Get saved max bound rect
- */
-const rtree_mbr_t * rtree_get_mbr_limit(rtree_root root);
+void RTreeDestroy(RTREE_ROOT root);
 
 
 /**
  * Search in an index tree for all data rectangles that overlap the argument rectangle.
  * Return the number of qualifying data rects.
  */
-int rtree_search_mbr(rtree_root root, const rtree_mbr_t *mbr, void* userarg, int (*searchCallback)(void*, void*));
+int RTreeSearchMbr(RTREE_ROOT root, const RTREE_MBR *mbr, int (*searchCallback)(void*, void*), void* cbarg);
 
 
 /**
@@ -256,16 +249,16 @@ int rtree_search_mbr(rtree_root root, const rtree_mbr_t *mbr, void* userarg, int
  * level to insert; e.g. a data rectangle goes in at level = 0.
  * _RTreeInsertRect does the recursion.
  */
-int rtree_insert_mbr(rtree_root root, rtree_mbr_t *data_mbr, void* data_id, int level);
+int RTreeInsertMbr(RTREE_ROOT root, RTREE_MBR *data_mbr, void* data_id, int level);
 
 
 /**
  * Delete a data rectangle from an index structure.
- * Pass in a pointer to a rtree_mbr_t, the tid of the record, ptr to ptr to root node.
+ * Pass in a pointer to a RTREE_MBR, the tid of the record, ptr to ptr to root node.
  * Returns 1 if record not found, 0 if success.
  * RTreeDeleteRect provides for eliminating the root.
  */
-int rtree_delete_mbr(rtree_root root, rtree_mbr_t *data_mbr, void* data_id);
+int RTreeDropMbr(RTREE_ROOT root, RTREE_MBR *data_mbr, void* data_id);
 
 #ifdef __cplusplus
 }

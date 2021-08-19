@@ -419,9 +419,7 @@ SHPHandle SHPOpen (const char * pszLayer, const char * pszAccess)
  */
 void SHPClose(SHPHandle psSHP)
 {
-    if (psSHP->hEnvTree) {
-        rtree_destroy(psSHP->hEnvTree);
-    }
+    SHPMBRTreeReset(psSHP, 1);
 
     /* Update the header if we have modified anything */
     if (psSHP->bUpdated) {
@@ -3067,55 +3065,32 @@ int SHPObjectEx2WKT (const SHPObjectEx *psObject, char *wktBuffer, double offset
 /*************************************************************************
  *                             SHAPES MBR Tree API
  ************************************************************************/
-SHAPEFILE_API void SHPEnvelopeTreeReset (SHPHandle hSHP, const SHPEnvelope *envfilter)
+void SHPMBRTreeReset (SHPHandle hSHP, int bClose)
 {
-    rtree_root rt = hSHP->hEnvTree;
-    if (rt) {
-        hSHP->hEnvTree = NULL;
-        rtree_destroy(rt);
+    RTREE_ROOT rtRoot = hSHP->MBRTree.rtRoot;
+    if (rtRoot) {
+        hSHP->MBRTree.rtRoot = NULL;
+        RTreeDestroy(rtRoot);
     }
-    hSHP->hEnvTree = rtree_create((const rtree_mbr_t *)envfilter, NULL);
+    if (! bClose) {
+        hSHP->MBRTree.rtRoot = RTreeCreate(NULL);
+    }
 }
 
 
-SHAPEFILE_API int SHPEnvelopeTreeAddShapeId(SHPHandle hSHP, int shpId, const SHPEnvelope *filter)
+SHPMBRTree SHPGetMBRTree(SHPHandle hSHP)
 {
-    SHPEnvelope env;
-    int ret = 0;
-
-    const rtree_mbr_t *mbr = rtree_get_mbr_limit(hSHP->hEnvTree);
-
-    if (SHPReadObjectEnvelope(hSHP, shpId, &env) != SHPT_NULL) {
-        if (!mbr && !filter) {
-            ret = 1;
-        } else if (mbr && filter) {
-            if (rtree_mbr_overlap(mbr, (const rtree_mbr_t *)&env) && rtree_mbr_overlap((const rtree_mbr_t *)filter, (const rtree_mbr_t *)&env)) {
-                ret = 1;
-            }
-        } else if (mbr) {
-            if (rtree_mbr_overlap(mbr, (const rtree_mbr_t *)&env)) {
-                ret = 1;
-            }
-        } else {
-            if (rtree_mbr_overlap((const rtree_mbr_t *)filter, (const rtree_mbr_t *)&env)) {
-                ret = 1;
-            }
-        }
-
-        if (ret) {
-            rtree_insert_mbr(hSHP->hEnvTree,
-                (rtree_mbr_t *)&env,          //  the mbr being inserted
-                RTREE_INT_TO_PTR(shpId + 1),  //  i+1 is mbr ID. ID MUST NEVER BE ZERO
-                0);                           //  always zero which means to add from the root
-        }
-    }
-
-    // 1: success, 0: error
-    return ret;
+    return &(hSHP->MBRTree);
 }
 
 
-int SHPEnvelopeTreeSearch(SHPHandle hSHP, const SHPEnvelope *env, int(*searchCallback)(void*, void *), void *userarg)
+int SHPMBRTreeAddShape(SHPMBRTree rtree, const SHPEnvelope *shapeEnv, void *shapeData, int treeLevel)
 {
-    return rtree_search_mbr(hSHP->hEnvTree, (const rtree_mbr_t *)env, userarg, searchCallback);
+    return RTreeInsertMbr(rtree->rtRoot, (RTREE_MBR *) shapeEnv, shapeData, treeLevel);
+}
+
+
+int SHPMBRTreeSearch(SHPMBRTree rtree, const SHPEnvelope *searchEnv, int(* onSearchShape)(void * shapeData,  void *userParam), void *userParam)
+{
+    return RTreeSearchMbr(rtree->rtRoot, (const RTREE_MBR *)searchEnv, onSearchShape, &userParam);
 }

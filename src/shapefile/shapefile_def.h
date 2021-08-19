@@ -341,6 +341,7 @@ typedef struct {
 typedef struct shape_tree_node * SHPTreeNodeHandle;
 typedef struct shape_tree_root * SHPTreeHandle;
 
+typedef struct _SHPInfoRTree   * SHPMBRTree;
 
 
 #define SHAPEFILE_RECORDS_MAX   256000000

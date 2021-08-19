@@ -200,11 +200,13 @@ SHAPEFILE_API int SHPCheckBoundsOverlap (double *padfBox1Min, double *padfBox1Ma
 /*************************************************************************
  *                             SHAPES MBR Tree API
  ************************************************************************/
-SHAPEFILE_API void SHPEnvelopeTreeReset (SHPHandle hSHP, const SHPEnvelope *envfilter);
+SHAPEFILE_API void SHPMBRTreeReset (SHPHandle hSHP, int bClose);
 
-SHAPEFILE_API int SHPEnvelopeTreeAddShapeId (SHPHandle hSHP, int shpId, const SHPEnvelope *envfilter);
+SHAPEFILE_API SHPMBRTree SHPGetMBRTree (SHPHandle hSHP);
 
-SHAPEFILE_API int SHPEnvelopeTreeSearch (SHPHandle hSHP, const SHPEnvelope *env, int(* searchCallback)(void*,  void *), void *userarg);
+SHAPEFILE_API int SHPMBRTreeAddShape(SHPMBRTree rtree, const SHPEnvelope *shapeEnv, void *shapeData, int treeLevel);
+
+SHAPEFILE_API int SHPMBRTreeSearch (SHPMBRTree rtree, const SHPEnvelope *searchEnv, int(* onSearchShape)(void * shapeData,  void *userParam), void *userParam);
 
 
 /*************************************************************************

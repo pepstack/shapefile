@@ -88,14 +88,16 @@ static const char LIBVERSION[] = "0.0.1";
 
 #define  MEM_BLKSIZE  128
 
+typedef struct _SHPInfoRTree
+{
+    RTREE_ROOT   rtRoot;
+} SHPInfoRTree;
+
 
 typedef struct  _SHPInfo
 {
     FILE        *fpSHP;
     FILE        *fpSHX;
-
-    /* r-tree for RectXY */
-    rtree_root  hEnvTree;
 
     int         nShapeType; /* SHPT_* */
     int         nFileSize;  /* SHP file */
@@ -110,6 +112,9 @@ typedef struct  _SHPInfo
     int         bUpdated;
     unsigned char *pabyRec;
     int         nBufSize;
+
+    /* RTree */
+    SHPInfoRTree MBRTree;
 } SHPInfo;
 
 
@@ -145,7 +150,7 @@ typedef struct _DBFInfo
 
 typedef struct _SHPRectTree
 {
-    rtree_root tree;
+    RTREE_ROOT tree;
 } SHPRectTree_t;
 
 

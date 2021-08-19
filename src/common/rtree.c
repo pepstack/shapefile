@@ -57,7 +57,7 @@ static const double rtree_sphere_volumes[] = {
 #define RTREE_MAX2(a, b)  ((a) > (b) ? (a) : (b))
 
 /* max branching factor of a node */
-#define RTREE_MAXCARD    ((int)((RTREE_PAGESZ-(2*sizeof(int))) / sizeof(rtree_branch_t)))
+#define RTREE_MAXCARD    ((int)((RTREE_PAGESZ-(2*sizeof(int))) / sizeof(RTREE_BRANCH)))
 
 #define RTREE_NODECARD   (RTREE_MAXCARD)
 #define RTREE_LEAFCARD   (RTREE_MAXCARD)
@@ -81,34 +81,34 @@ typedef struct
     int			minfill;
     int			taken[RTREE_MAXCARD+1];
     int			count[2];
-    rtree_mbr_t	cover[2];
+    RTREE_MBR	cover[2];
     RTREE_REAL	area[2];
-} rtree_partition_t;
+} RTreePartition;
 
 
-typedef struct _rtree_node_t
+typedef struct _RTreeNode
 {
     int	count;
     int	level;  /* 0 is leaf, others positive */
-    rtree_branch_t branch[RTREE_MAXCARD];
-} rtree_node_t;
+    RTREE_BRANCH branch[RTREE_MAXCARD];
+} RTreeNode;
 
 
-typedef struct _rtree_nodelist_t
+typedef struct _RTreeNodeList
 {
-     struct _rtree_nodelist_t *next;
-     rtree_node_t *node;
-} rtree_nodelist_t;
+     struct _RTreeNodeList *next;
+     RTreeNode *node;
+} RTreeNodeList;
 
 
-typedef struct _rtree_root_t
+typedef struct _RTreeRoot
 {
-    rtree_node_t*	rootNode;
-    rtree_branch_t  branchBuf[RTREE_MAXCARD + 1];
+    RTreeNode*	    rootNode;
+    RTREE_BRANCH    branchBuf[RTREE_MAXCARD + 1];
     int				branchNum;
-    rtree_mbr_t		coverSplit;
+    RTREE_MBR		coverSplit;
     RTREE_REAL		coverSplitArea;
-    rtree_partition_t	partitions[RTREE_PARTITIONS];
+    RTreePartition	partitions[RTREE_PARTITIONS];
 
     /**
      * If passed to a tree search, this callback function will be called
@@ -118,16 +118,13 @@ typedef struct _rtree_root_t
      * the search will return the number of hits found up to that point.
      */
     int (*searchCallback)(void* dataid, void* userarg);
-
-    rtree_mbr_t * mbrlimit;
-    char mbr[0];
-} rtree_root_t;
+} RTreeRoot;
 
 
 /**
  * Load branch buffer with branches from full node plus the extra branch.
  */
-static void _RTreeGetBranches(rtree_root root, rtree_node_t *node, rtree_branch_t *br)
+static void _RTreeGetBranches(RTREE_ROOT root, RTreeNode *node, RTREE_BRANCH *br)
 {
     int i;
 
@@ -144,18 +141,18 @@ static void _RTreeGetBranches(rtree_root root, rtree_node_t *node, rtree_branch_
     /* calculate mbr containing all in the set */
     root->coverSplit = root->branchBuf[0].mbr;
     for (i=1; i<RTREE_MAXKIDS(node)+1; i++) {
-        root->coverSplit = rtree_mbr_union(&root->coverSplit, &root->branchBuf[i].mbr);
+        root->coverSplit = RTreeMbrCombine(&root->coverSplit, &root->branchBuf[i].mbr);
     }
 
-    root->coverSplitArea = rtree_mbr_spherical_volume(&root->coverSplit);
-    rtree_init_node(node);
+    root->coverSplitArea = RTreeMbrSpherVolume(&root->coverSplit);
+    RTreeInitNode(node);
 }
 
 
 /**
  * Put a branch in one of the groups.
  */
-static void _RTreeClassify(rtree_root root, int i, int group, rtree_partition_t *p)
+static void _RTreeClassify(RTREE_ROOT root, int i, int group, RTreePartition *p)
 {
     RTREE_ASSERT(p);
     RTREE_ASSERT(!p->taken[i]);
@@ -166,9 +163,9 @@ static void _RTreeClassify(rtree_root root, int i, int group, rtree_partition_t 
     if (p->count[group] == 0) {
         p->cover[group] = root->branchBuf[i].mbr;
     } else {
-        p->cover[group] = rtree_mbr_union(&root->branchBuf[i].mbr, &p->cover[group]);
+        p->cover[group] = RTreeMbrCombine(&root->branchBuf[i].mbr, &p->cover[group]);
     }
-    p->area[group] = rtree_mbr_spherical_volume(&p->cover[group]);
+    p->area[group] = RTreeMbrSpherVolume(&p->cover[group]);
     p->count[group]++;
 }
 
@@ -177,21 +174,21 @@ static void _RTreeClassify(rtree_root root, int i, int group, rtree_partition_t 
  * Pick two rects from set to be the first elements of the two groups.
  * Pick the two that waste the most area if covered by a single rectangle.
  */
-static void _RTreePickSeeds(rtree_root root, rtree_partition_t *p)
+static void _RTreePickSeeds(RTREE_ROOT root, RTreePartition *p)
 {
     int i, j, seed0=0, seed1=0;
     RTREE_REAL worst, waste, area[RTREE_MAXCARD+1];
 
     for (i=0; i<p->total; i++) {
-        area[i] = rtree_mbr_spherical_volume(&root->branchBuf[i].mbr);
+        area[i] = RTreeMbrSpherVolume(&root->branchBuf[i].mbr);
     }
     worst = -root->coverSplitArea - 1;
 
     for (i=0; i<p->total-1; i++) {
         for (j=i+1; j<p->total; j++) {
-            rtree_mbr_t one_rect;
-            one_rect = rtree_mbr_union(&root->branchBuf[i].mbr, &root->branchBuf[j].mbr);
-            waste = rtree_mbr_spherical_volume(&one_rect) - area[i] - area[j];
+            RTREE_MBR one_rect;
+            one_rect = RTreeMbrCombine(&root->branchBuf[i].mbr, &root->branchBuf[j].mbr);
+            waste = RTreeMbrSpherVolume(&one_rect) - area[i] - area[j];
             if (waste > worst) {
                 worst = waste;
                 seed0 = i;
@@ -207,7 +204,7 @@ static void _RTreePickSeeds(rtree_root root, rtree_partition_t *p)
 /**
  * Copy branches from the buffer into two nodes according to the partition.
  */
-static void _RTreeLoadNodes(rtree_root root, rtree_node_t *n, rtree_node_t *q, rtree_partition_t *p)
+static void _RTreeLoadNodes(RTREE_ROOT root, RTreeNode *n, RTreeNode *q, RTreePartition *p)
 {
     int i;
     RTREE_ASSERT(n && q && p);
@@ -215,24 +212,24 @@ static void _RTreeLoadNodes(rtree_root root, rtree_node_t *n, rtree_node_t *q, r
     for (i=0; i<p->total; i++) {
         RTREE_ASSERT(p->partition[i] == 0 || p->partition[i] == 1);
         if (p->partition[i] == 0) {
-            rtree_add_branch(root, &root->branchBuf[i], n, NULL);
+            RTreeAddBranch(root, &root->branchBuf[i], n, NULL);
         } else if (p->partition[i] == 1) {
-            rtree_add_branch(root, &root->branchBuf[i], q, NULL);
+            RTreeAddBranch(root, &root->branchBuf[i], q, NULL);
         }
     }
 }
 
 
 /**
- * Initialize a rtree_partition_t structure.
+ * Initialize a RTreePartition structure.
  */
-static void _RTreeInitPart( rtree_partition_t *p, int maxrects, int minfill)
+static void _RTreeInitPart( RTreePartition *p, int maxrects, int minfill)
 {
     int i;
     RTREE_ASSERT(p);
 
     p->count[0] = p->count[1] = 0;
-    p->cover[0] = p->cover[1] = rtree_mbr_null();
+    p->cover[0] = p->cover[1] = RTreeMbrNull();
     p->area[0] = p->area[1] = (RTREE_REAL)0;
     p->total = maxrects;
     p->minfill = minfill;
@@ -245,9 +242,9 @@ static void _RTreeInitPart( rtree_partition_t *p, int maxrects, int minfill)
 
 
 /**
- * Print out data for a partition from rtree_partition_t struct.
+ * Print out data for a partition from RTreePartition struct.
  */
-static void _RTreePrintPart(rtree_root root, rtree_partition_t *p)
+static void _RTreePrintPart(RTREE_ROOT root, RTreePartition *p)
 {
     int i;
     RTREE_ASSERT(p);
@@ -277,10 +274,10 @@ static void _RTreePrintPart(rtree_root root, rtree_partition_t *p)
             p->area[0] + p->area[1], (float)root->coverSplitArea / (p->area[0] + p->area[1]));
     }
     fprintf(stdout, "cover[0]:\n");
-    rtree_mbr_print(&p->cover[0], 0);
+    RTreeMbrPrint(&p->cover[0], 0);
 
     fprintf(stdout, "cover[1]:\n");
-    rtree_mbr_print(&p->cover[1], 0);
+    RTreeMbrPrint(&p->cover[1], 0);
 }
 
 
@@ -297,7 +294,7 @@ static void _RTreePrintPart(rtree_root root, rtree_partition_t *p)
  * fill requirement) then other group gets the rest.
  * These last are the ones that can go in either group most easily.
  */
-static void _RTreeMethodZero(rtree_root root, rtree_partition_t *p, int minfill )
+static void _RTreeMethodZero(RTREE_ROOT root, RTreePartition *p, int minfill )
 {
     int i;
     RTREE_REAL biggestDiff;
@@ -313,14 +310,14 @@ static void _RTreeMethodZero(rtree_root root, rtree_partition_t *p, int minfill 
         biggestDiff = (RTREE_REAL)-1.;
         for (i=0; i<p->total; i++) {
             if (!p->taken[i]) {
-                rtree_mbr_t *r, rect_0, rect_1;
+                RTREE_MBR *r, rect_0, rect_1;
                 RTREE_REAL growth0, growth1, diff;
 
                 r = &root->branchBuf[i].mbr;
-                rect_0 = rtree_mbr_union(r, &p->cover[0]);
-                rect_1 = rtree_mbr_union(r, &p->cover[1]);
-                growth0 = rtree_mbr_spherical_volume(&rect_0) - p->area[0];
-                growth1 = rtree_mbr_spherical_volume(&rect_1) - p->area[1];
+                rect_0 = RTreeMbrCombine(r, &p->cover[0]);
+                rect_1 = RTreeMbrCombine(r, &p->cover[1]);
+                growth0 = RTreeMbrSpherVolume(&rect_0) - p->area[0];
+                growth1 = RTreeMbrSpherVolume(&rect_1) - p->area[1];
                 diff = growth1 - growth0;
 
                 if (diff >= 0) {
@@ -364,17 +361,17 @@ static void _RTreeMethodZero(rtree_root root, rtree_partition_t *p, int minfill 
 /**
  * Initialize one branch cell in a node.
  */
-static void _RTreeInitBranch( rtree_branch_t *br )
+static void _RTreeInitBranch( RTREE_BRANCH *br )
 {
-    rtree_mbr_init(&(br->mbr));
+    RTreeMbrInit(&(br->mbr));
     br->child = NULL;
 }
 
 
-static void _RTreePrintBranch( rtree_branch_t *br, int depth )
+static void _RTreePrintBranch( RTREE_BRANCH *br, int depth )
 {
-    rtree_mbr_print(&(br->mbr), depth);
-    rtree_print_node(br->child, depth);
+    RTreeMbrPrint(&(br->mbr), depth);
+    RTreePrintNode(br->child, depth);
 }
 
 
@@ -387,37 +384,37 @@ static void _RTreePrintBranch( rtree_branch_t *br, int depth )
  * The level argument specifies the number of steps up from the leaf
  * level to insert; e.g. a data rectangle goes in at level = 0.
  */
-static int _RTreeInsertMbr(rtree_root root, rtree_mbr_t *mbr, void* tid,  rtree_node_t *node, rtree_node_t **new_node, int level)
+static int _RTreeInsertMbr(RTREE_ROOT root, RTREE_MBR *mbr, void* tid,  RTreeNode *node, RTreeNode **new_node, int level)
 {
     int i;
-    rtree_branch_t b;
-    rtree_node_t *n2;
+    RTREE_BRANCH b;
+    RTreeNode *n2;
 
     RTREE_ASSERT(mbr && node && new_node);
     RTREE_ASSERT(level >= 0 && level <= node->level);
 
     /* Still above level for insertion, go down tree recursively */
     if (node->level > level) {
-        i = rtree_pick_branch(mbr, node);
+        i = RTreePickBranch(mbr, node);
         if (!_RTreeInsertMbr(root, mbr, tid, node->branch[i].child, &n2, level)) {
             /* child was not split */
-            node->branch[i].mbr = rtree_mbr_union(mbr, &(node->branch[i].mbr));
+            node->branch[i].mbr = RTreeMbrCombine(mbr, &(node->branch[i].mbr));
             return 0;
         }
 
         /* child was split */
-        node->branch[i].mbr = rtree_node_cover(node->branch[i].child);
+        node->branch[i].mbr = RTreeNodeCover(node->branch[i].child);
         b.child = n2;
-        b.mbr = rtree_node_cover(n2);
+        b.mbr = RTreeNodeCover(n2);
 
-        return rtree_add_branch(root, &b, node, new_node);
+        return RTreeAddBranch(root, &b, node, new_node);
     } else if (node->level == level) {
         /* Have reached level for insertion. Add mbr, split if necessary */
         b.mbr = *mbr;
-        b.child = ( rtree_node_t *) tid;
+        b.child = ( RTreeNode *) tid;
 
         /* child field of leaves contains tid of data record */
-        return rtree_add_branch(root, &b, node, new_node);
+        return RTreeAddBranch(root, &b, node, new_node);
     }
 
     /* Not supposed to happen */
@@ -430,13 +427,13 @@ static int _RTreeInsertMbr(rtree_root root, rtree_mbr_t *mbr, void* tid,  rtree_
  * Allocate space for a node in the list used in DeletRect to
  * store Nodes that are too empty.
  */
-static rtree_nodelist_t * _RTreeNewListNode(void)
+static RTreeNodeList * _RTreeNewListNode(void)
 {
-    return (rtree_nodelist_t *) malloc(sizeof(rtree_nodelist_t));
+    return (RTreeNodeList *) malloc(sizeof(RTreeNodeList));
 }
 
 
-static void _RTreeFreeListNode(rtree_nodelist_t *p)
+static void _RTreeFreeListNode(RTreeNodeList *p)
 {
     free(p);
 }
@@ -446,9 +443,9 @@ static void _RTreeFreeListNode(rtree_nodelist_t *p)
  * Add a node to the reinsertion list.  All its branches will later
  * be reinserted into the index structure.
  */
-static void _RTreeReInsert(rtree_node_t *node, rtree_nodelist_t **nlpp)
+static void _RTreeReInsert(RTreeNode *node, RTreeNodeList **nlpp)
 {
-    rtree_nodelist_t *ln = _RTreeNewListNode();
+    RTreeNodeList *ln = _RTreeNewListNode();
     ln->node = node;
     ln->next = *nlpp;
     *nlpp = ln;
@@ -461,7 +458,7 @@ static void _RTreeReInsert(rtree_node_t *node, rtree_nodelist_t **nlpp)
  * merges branches on the way back up.
  * Returns 1 if record not found, 0 if success.
  */
-static int _RTreeDeleteMbr(rtree_mbr_t *mbr, void* tid, rtree_node_t *node, rtree_nodelist_t **nlpp)
+static int _RTreeDeleteMbr(RTREE_MBR *mbr, void* tid, RTreeNode *node, RTreeNodeList **nlpp)
 {
     int i;
 
@@ -471,14 +468,14 @@ static int _RTreeDeleteMbr(rtree_mbr_t *mbr, void* tid, rtree_node_t *node, rtre
     if (node->level > 0) {
         /* not a leaf node */
         for (i = 0; i < RTREE_NODECARD; i++) {
-            if (node->branch[i].child && rtree_mbr_overlap( mbr, &(node->branch[i].mbr ))) {
+            if (node->branch[i].child && RTreeMbrOverlapped( mbr, &(node->branch[i].mbr ))) {
                 if (!_RTreeDeleteMbr( mbr, tid, node->branch[i].child, nlpp)) {
                     if (node->branch[i].child->count >= RTREE_MINNODEFILL) {
-                        node->branch[i].mbr = rtree_node_cover(	node->branch[i].child );
+                        node->branch[i].mbr = RTreeNodeCover(	node->branch[i].child );
                     } else {
                         /* not enough entries in child, eliminate child node */
                         _RTreeReInsert(node->branch[i].child, nlpp);
-                        rtree_cut_branch(node, i);
+                        RTreeCutBranch(node, i);
                     }
                     return 0;
                 }
@@ -489,8 +486,8 @@ static int _RTreeDeleteMbr(rtree_mbr_t *mbr, void* tid, rtree_node_t *node, rtre
 
     /* a leaf node */
     for (i = 0; i < RTREE_LEAFCARD; i++) {
-        if ( node->branch[i].child && node->branch[i].child == (rtree_node_t *) tid ) {
-            rtree_cut_branch( node, i );
+        if ( node->branch[i].child && node->branch[i].child == (RTreeNode *) tid ) {
+            RTreeCutBranch( node, i );
             return 0;
         }
     }
@@ -512,7 +509,7 @@ static void _RTreeTabIn(int depth)
  * Search in an index tree or subtree for all data rectangles that overlap the argument rectangle.
  * Return the number of qualifying data rects.
  */
-static int _RTreeSearchMbr(rtree_node_t *node, const rtree_mbr_t *mbr, int (*searchCallback)(void*, void*), void* cbParam)
+static int _RTreeSearchMbr(RTreeNode *node, const RTREE_MBR *mbr, int (*searchCallback)(void*, void*), void* cbParam)
 {
     /* Fix not yet tested. */
     int hitCount = 0;
@@ -524,13 +521,13 @@ static int _RTreeSearchMbr(rtree_node_t *node, const rtree_mbr_t *mbr, int (*sea
     if (node->level > 0) {
         /* this is an internal node in the tree */
         for (i=0; i<RTREE_NODECARD; i++) {
-            if (node->branch[i].child && rtree_mbr_overlap(mbr, &node->branch[i].mbr))
+            if (node->branch[i].child && RTreeMbrOverlapped(mbr, &node->branch[i].mbr))
                 hitCount += _RTreeSearchMbr(node->branch[i].child, mbr, searchCallback, cbParam);
         }
     } else {
         /* this is a leaf node */
         for (i=0; i<RTREE_LEAFCARD; i++) {
-            if (node->branch[i].child && rtree_mbr_overlap(mbr, &node->branch[i].mbr)) {
+            if (node->branch[i].child && RTreeMbrOverlapped(mbr, &node->branch[i].mbr)) {
                 hitCount++;
 
                 /* call the user-provided callback and return if callback wants to terminate search early */
@@ -550,7 +547,7 @@ static int _RTreeSearchMbr(rtree_node_t *node, const rtree_mbr_t *mbr, int (*sea
 /**
  * Initialize a rectangle to have all 0 coordinates.
  */
-void rtree_mbr_init( rtree_mbr_t *mbr)
+void RTreeMbrInit( RTREE_MBR *mbr)
 {
     int i;
     for (i=0; i<RTREE_SIDES; i++) {
@@ -563,9 +560,9 @@ void rtree_mbr_init( rtree_mbr_t *mbr)
  * Return a mbr whose first low side is higher than its opposite side -
  * interpreted as an undefined mbr.
  */
-rtree_mbr_t rtree_mbr_null(void)
+RTREE_MBR RTreeMbrNull(void)
 {
-    rtree_mbr_t mbr;
+    RTREE_MBR mbr;
     int i;
 
     mbr.bound[0] = (RTREE_REAL) 1;
@@ -581,7 +578,7 @@ rtree_mbr_t rtree_mbr_null(void)
 /**
  * Print out the data for a rectangle.
  */
- void rtree_mbr_print( rtree_mbr_t *mbr, int depth)
+ void RTreeMbrPrint( RTREE_MBR *mbr, int depth)
 {
     int i;
 
@@ -597,7 +594,7 @@ rtree_mbr_t rtree_mbr_null(void)
 /**
  * Calculate the 2-dimensional area of a rectangle
  */
- RTREE_REAL rtree_mbr_area( rtree_mbr_t *mbr )
+ RTREE_REAL RTreeMbrArea( RTREE_MBR *mbr )
 {
     if (RTREE_INVALIDMBR(mbr)) {
         return (RTREE_REAL) 0;
@@ -609,7 +606,7 @@ rtree_mbr_t rtree_mbr_null(void)
 /**
  * Calculate the n-dimensional volume of a rectangle
  */
- RTREE_REAL rtree_mbr_volume( rtree_mbr_t *mbr )
+ RTREE_REAL RTreeMbrVolume( RTREE_MBR *mbr )
 {
     int i;
     RTREE_REAL vol = (RTREE_REAL) 1;
@@ -627,9 +624,9 @@ rtree_mbr_t rtree_mbr_null(void)
 
 /**
  * Calculate the n-dimensional volume of the bounding sphere of a rectangle.
- * The exact volume of the bounding sphere for the given rtree_mbr_t.
+ * The exact volume of the bounding sphere for the given RTREE_MBR.
  */
-RTREE_REAL rtree_mbr_spherical_volume(rtree_mbr_t *mbr)
+RTREE_REAL RTreeMbrSpherVolume(RTREE_MBR *mbr)
 {
     int i;
     double sumsqr = 0, halfext, radius;
@@ -648,7 +645,7 @@ RTREE_REAL rtree_mbr_spherical_volume(rtree_mbr_t *mbr)
 /**
  * Calculate the n-dimensional surface area of a rectangle
  */
- RTREE_REAL rtree_mbr_surface_area( rtree_mbr_t *mbr )
+ RTREE_REAL RTreeMbrSurfaceArea( RTREE_MBR *mbr )
 {
     int i, j;
     RTREE_REAL sum = (RTREE_REAL) 0;
@@ -676,10 +673,10 @@ RTREE_REAL rtree_mbr_spherical_volume(rtree_mbr_t *mbr)
 /**
  * Combine two rectangles, make one that includes both.
  */
- rtree_mbr_t rtree_mbr_union( rtree_mbr_t *rc1, rtree_mbr_t *rc2 )
+ RTREE_MBR RTreeMbrCombine( RTREE_MBR *rc1, RTREE_MBR *rc2 )
 {
     int i, j;
-    rtree_mbr_t new_rect;
+    RTREE_MBR new_rect;
 
     RTREE_ASSERT(rc1 && rc2);
 
@@ -701,7 +698,7 @@ RTREE_REAL rtree_mbr_spherical_volume(rtree_mbr_t *mbr)
 /**
  * Decide whether two rectangles overlap.
  */
-int rtree_mbr_overlap(const rtree_mbr_t *rc1, const rtree_mbr_t *rc2)
+int RTreeMbrOverlapped(const RTREE_MBR *rc1, const RTREE_MBR *rc2)
 {
     if (rc1 == rc2) {
         return RTREE_TRUE;
@@ -722,7 +719,7 @@ int rtree_mbr_overlap(const rtree_mbr_t *rc1, const rtree_mbr_t *rc2)
 /**
  * Decide whether rectangle r is contained in rectangle s.
  */
-int rtree_mbr_contained(const rtree_mbr_t *r, const rtree_mbr_t *s)
+int RTreeMbrContained(const RTREE_MBR *r, const RTREE_MBR *s)
 {
     int i, j, result;
     RTREE_ASSERT(r && s);
@@ -750,9 +747,9 @@ int rtree_mbr_contained(const rtree_mbr_t *r, const rtree_mbr_t *s)
  * Old node is one of the new ones, and one really new one is created.
  * Tries more than one method for choosing a partition, uses best result.
  */
-void rtree_split_node(rtree_root root, rtree_node node, rtree_branch_t *br, rtree_node *new_node)
+void RTreeSplitNode(RTREE_ROOT root, RTREE_NODE node, RTREE_BRANCH *br, RTREE_NODE *new_node)
 {
-    rtree_partition_t *p;
+    RTreePartition *p;
     int level;
 
     RTREE_ASSERT(node && br);
@@ -768,7 +765,7 @@ void rtree_split_node(rtree_root root, rtree_node node, rtree_branch_t *br, rtre
     _RTreeMethodZero(root, p, (level>0 ? RTREE_MINNODEFILL : RTREE_MINLEAFFILL));
 
     /* put branches from buffer into 2 nodes according to chosen partition	*/
-    *new_node = rtree_new_node();
+    *new_node = RTreeNewNode();
     (*new_node)->level = node->level = level;
     _RTreeLoadNodes(root, node, *new_node, p);
 
@@ -777,9 +774,9 @@ void rtree_split_node(rtree_root root, rtree_node node, rtree_branch_t *br, rtre
 
 
 /**
- * Initialize a rtree_node_t structure.
+ * Initialize a RTreeNode structure.
  */
-void rtree_init_node(rtree_node node)
+void RTreeInitNode(RTREE_NODE node)
 {
     int i;
     node->count = 0;
@@ -793,16 +790,16 @@ void rtree_init_node(rtree_node node)
 /**
  * Make a new node and initialize to have all branch cells empty.
  */
-rtree_node_t *rtree_new_node(void)
+RTreeNode *RTreeNewNode(void)
 {
-    rtree_node_t *node = (rtree_node_t*) malloc(sizeof(rtree_node_t));
+    RTreeNode *node = (RTreeNode*) malloc(sizeof(RTreeNode));
     RTREE_ASSERT(node);
-    rtree_init_node(node);
+    RTreeInitNode(node);
     return node;
 }
 
 
-void rtree_free_node(rtree_node node)
+void RTreeFreeNode(RTREE_NODE node)
 {
     RTREE_ASSERT(node);
     free(node);
@@ -812,7 +809,7 @@ void rtree_free_node(rtree_node node)
 /**
  * Print out the data in a node.
  */
- void rtree_print_node(rtree_node node, int depth)
+ void RTreePrintNode(RTREE_NODE node, int depth)
 {
     int i;
     RTREE_ASSERT(node);
@@ -846,13 +843,13 @@ void rtree_free_node(rtree_node node)
 /**
  * Find the smallest rectangle that includes all rectangles in branches of a node.
  */
-rtree_mbr_t rtree_node_cover(rtree_node node)
+RTREE_MBR RTreeNodeCover(RTREE_NODE node)
 {
     int i, first_time=1;
-    rtree_mbr_t mbr;
+    RTREE_MBR mbr;
     RTREE_ASSERT(node);
 
-    rtree_mbr_init(&mbr);
+    RTreeMbrInit(&mbr);
 
     for (i = 0; i < RTREE_MAXKIDS(node); i++) {
         if (node->branch[i].child) {
@@ -860,7 +857,7 @@ rtree_mbr_t rtree_node_cover(rtree_node node)
                 mbr = node->branch[i].mbr;
                 first_time = 0;
             } else {
-                mbr = rtree_mbr_union(&mbr, &(node->branch[i].mbr));
+                mbr = RTreeMbrCombine(&mbr, &(node->branch[i].mbr));
             }
         }
     }
@@ -875,21 +872,21 @@ rtree_mbr_t rtree_node_cover(rtree_node node)
  * In case of a tie, pick the one which was smaller before, to get
  * the best resolution when searching.
  */
-int rtree_pick_branch(rtree_mbr_t *mbr, rtree_node node)
+int RTreePickBranch(RTREE_MBR *mbr, RTREE_NODE node)
 {
-    rtree_mbr_t *r;
+    RTREE_MBR *r;
     int i, first_time = 1;
     RTREE_REAL increase, bestIncr=(RTREE_REAL)-1, area, bestArea=0;
     int best=0;
-    rtree_mbr_t tmp_rect;
+    RTREE_MBR tmp_rect;
     RTREE_ASSERT(mbr && node);
 
     for (i=0; i<RTREE_MAXKIDS(node); i++) {
         if (node->branch[i].child) {
             r = &node->branch[i].mbr;
-            area = rtree_mbr_spherical_volume(r);
-            tmp_rect = rtree_mbr_union(mbr, r);
-            increase = rtree_mbr_spherical_volume(&tmp_rect) - area;
+            area = RTreeMbrSpherVolume(r);
+            tmp_rect = RTreeMbrCombine(mbr, r);
+            increase = RTreeMbrSpherVolume(&tmp_rect) - area;
             if (increase < bestIncr || first_time) {
                 best = i;
                 bestArea = area;
@@ -912,7 +909,7 @@ int rtree_pick_branch(rtree_mbr_t *mbr, rtree_node node)
  * Returns 1 if node split, sets *new_node to address of new node.
  * Old node updated, becomes one of two.
  */
-int rtree_add_branch(rtree_root root, rtree_branch_t *br, rtree_node node, rtree_node *new_node)
+int RTreeAddBranch(RTREE_ROOT root, RTREE_BRANCH *br, RTREE_NODE node, RTREE_NODE *new_node)
 {
     int i;
     RTREE_ASSERT(br && node);
@@ -931,7 +928,7 @@ int rtree_add_branch(rtree_root root, rtree_branch_t *br, rtree_node node, rtree
     }
 
     RTREE_ASSERT(new_node);
-    rtree_split_node(root, node, br, new_node);
+    RTreeSplitNode(root, node, br, new_node);
     return 1;
 }
 
@@ -939,7 +936,7 @@ int rtree_add_branch(rtree_root root, rtree_branch_t *br, rtree_node node, rtree
 /**
  * Disconnect a dependent node.
  */
-void rtree_cut_branch(rtree_node node, int i)
+void RTreeCutBranch(RTREE_NODE node, int i)
 {
     RTREE_ASSERT(node && i>=0 && i<RTREE_MAXKIDS(node));
     RTREE_ASSERT(node->branch[i].child);
@@ -951,40 +948,30 @@ void rtree_cut_branch(rtree_node node, int i)
 /**
  * Destroy (free) node recursively.
  */
- void rtree_delete_node(rtree_node node)
+ void RTreeDelNode(RTREE_NODE node)
 {
     int i;
     if (node->level > 0) {
         /* it is not leaf -> destroy childs */
         for (i = 0; i < RTREE_NODECARD; i++) {
             if (node->branch[i].child) {
-                rtree_delete_node(node->branch[i].child);
+                RTreeDelNode(node->branch[i].child);
             }
         }
     }
     /* Free this node */
-    rtree_free_node( node );
+    RTreeFreeNode( node );
 }
 
 
 /**
  * Create a new rtree index, empty. Consists of a single node.
  */
-rtree_root rtree_create(const rtree_mbr_t *limit, int (*RTreeSearchCallback)(void*, void*))
+RTREE_ROOT RTreeCreate(int (*RTreeSearchCallback)(void*, void*))
 {
-    rtree_root_t * root;
-
-    if (limit) {
-        root = (rtree_root_t*) malloc(sizeof(rtree_root_t) + sizeof(rtree_mbr_t));
-        root->mbrlimit = (rtree_mbr_t *) root->mbr;
-        memcpy(root->mbrlimit, limit, sizeof(rtree_mbr_t));
-    } else {
-        root = (rtree_root_t*) malloc(sizeof(rtree_root_t));
-        root->mbrlimit = NULL;
-    }
-
+    RTreeRoot *root = (RTreeRoot*) malloc(sizeof(RTreeRoot));
     RTREE_ASSERT(root);
-    root->rootNode = rtree_new_node();
+    root->rootNode = RTreeNewNode();
     RTREE_ASSERT(root->rootNode);
     root->rootNode->level = 0;		/* leaf */
     root->searchCallback = RTreeSearchCallback;
@@ -995,17 +982,11 @@ rtree_root rtree_create(const rtree_mbr_t *limit, int (*RTreeSearchCallback)(voi
 /**
  * Destroy a rtree root must be a root of rtree. Free all memory.
  */
-void rtree_destroy(rtree_root root)
+void RTreeDestroy(RTREE_ROOT root)
 {
-    rtree_delete_node (root->rootNode);
+    RTreeDelNode (root->rootNode);
     root->rootNode = 0;
     free(root);
-}
-
-
-const rtree_mbr_t * rtree_get_mbr_limit(rtree_root root)
-{
-    return root->mbrlimit;
 }
 
 
@@ -1013,9 +994,9 @@ const rtree_mbr_t * rtree_get_mbr_limit(rtree_root root)
  * Search in an index tree for all data rectangles that overlap the argument rectangle.
  * Return the number of qualifying data rects.
  */
-int rtree_search_mbr(rtree_root root, const rtree_mbr_t *mbr, void* userarg, int (*searchCallback)(void*, void*))
+int RTreeSearchMbr(RTREE_ROOT root, const RTREE_MBR *mbr, int (*searchCallback)(void*, void*), void* cbarg)
 {
-    return  _RTreeSearchMbr(root->rootNode, mbr, (searchCallback? searchCallback : root->searchCallback), userarg);
+    return  _RTreeSearchMbr(root->rootNode, mbr, (searchCallback? searchCallback : root->searchCallback), cbarg);
 }
 
 
@@ -1027,15 +1008,15 @@ int rtree_search_mbr(rtree_root root, const rtree_mbr_t *mbr, void* userarg, int
  * level to insert; e.g. a data rectangle goes in at level = 0.
  * _RTreeInsertMbr does the recursion.
  */
-int rtree_insert_mbr(rtree_root root, rtree_mbr_t *mbr, void* tid, int level)
+int RTreeInsertMbr(RTREE_ROOT root, RTREE_MBR *mbr, void* tid, int level)
 {
 #ifdef _DEBUG
     int i;
 #endif
 
-    rtree_node_t	*newroot;
-    rtree_node_t	*newnode;
-    rtree_branch_t b;
+    RTreeNode	*newroot;
+    RTreeNode	*newnode;
+    RTREE_BRANCH b;
 
     RTREE_ASSERT(mbr && root);
     RTREE_ASSERT(level >= 0 && level <= root->rootNode->level);
@@ -1048,14 +1029,14 @@ int rtree_insert_mbr(rtree_root root, rtree_mbr_t *mbr, void* tid, int level)
 
     /* root split */
     if (_RTreeInsertMbr(root, mbr, tid, root->rootNode, &newnode, level)) {
-        newroot = rtree_new_node();  /* grow a new root, & tree taller */
+        newroot = RTreeNewNode();  /* grow a new root, & tree taller */
         newroot->level = root->rootNode->level + 1;
-        b.mbr = rtree_node_cover(root->rootNode);
+        b.mbr = RTreeNodeCover(root->rootNode);
         b.child = root->rootNode;
-        rtree_add_branch(root, &b, newroot, NULL);
-        b.mbr = rtree_node_cover(newnode);
+        RTreeAddBranch(root, &b, newroot, NULL);
+        b.mbr = RTreeNodeCover(newnode);
         b.child = newnode;
-        rtree_add_branch(root, &b, newroot, NULL);
+        RTreeAddBranch(root, &b, newroot, NULL);
         root->rootNode = newroot;
         return 1;
     }
@@ -1066,16 +1047,16 @@ int rtree_insert_mbr(rtree_root root, rtree_mbr_t *mbr, void* tid, int level)
 
 /**
  * Delete a data rectangle from an index structure.
- * Pass in a pointer to a rtree_mbr_t, the tid of the record, ptr to ptr to root node.
+ * Pass in a pointer to a RTREE_MBR, the tid of the record, ptr to ptr to root node.
  * Returns 1 if record not found, 0 if success.
  * RTreeDeleteRect provides for eliminating the root.
  */
-int rtree_delete_mbr(rtree_root root, rtree_mbr_t *mbr, void* tid)
+int RTreeDropMbr(RTREE_ROOT root, RTREE_MBR *mbr, void* tid)
 {
     int		i;
-    rtree_node_t		*tmp_nptr = NULL;
-    rtree_nodelist_t	*reInsertList = NULL;
-    rtree_nodelist_t	*e;
+    RTreeNode		*tmp_nptr = NULL;
+    RTreeNodeList	*reInsertList = NULL;
+    RTreeNodeList	*e;
 
     RTREE_ASSERT(mbr && root && root->rootNode);
 
@@ -1088,13 +1069,13 @@ int rtree_delete_mbr(rtree_root root, rtree_mbr_t *mbr, void* tid)
 
             for (i = 0; i < RTREE_MAXKIDS(tmp_nptr); i++) {
                 if (tmp_nptr->branch[i].child) {
-                    rtree_insert_mbr(root, &(tmp_nptr->branch[i].mbr), (void*)tmp_nptr->branch[i].child, tmp_nptr->level);
+                    RTreeInsertMbr(root, &(tmp_nptr->branch[i].mbr), (void*)tmp_nptr->branch[i].child, tmp_nptr->level);
                 }
             }
 
             e = reInsertList;
             reInsertList = reInsertList->next;
-            rtree_free_node(e->node);
+            RTreeFreeNode(e->node);
             _RTreeFreeListNode(e);
         }
 
@@ -1107,7 +1088,7 @@ int rtree_delete_mbr(rtree_root root, rtree_mbr_t *mbr, void* tid)
                 }
             }
             RTREE_ASSERT(tmp_nptr);
-            rtree_free_node(root->rootNode);
+            RTreeFreeNode(root->rootNode);
             root->rootNode = tmp_nptr;
         }
         return 0;

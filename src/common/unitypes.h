@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.14
  * @create     2019-09-30 12:37:44
- * @update     2021-07-20 13:26:44
+ * @update     2021-08-06 15:26:44
  */
 #ifndef UNITYPES_H_INCLUDED
 #define UNITYPES_H_INCLUDED
@@ -425,6 +425,17 @@ int snprintf_chkd_V2(int exitcode, char *outputbuf, size_t bufsize, const char *
 
 #define ptr_cast_to_int64(pv)    ((int64_t) (uint64_t) (void*) (pv))
 #define int64_cast_to_ptr(iv)    ((void*) (uint64_t) (int64_t) (iv))
+
+#define dlsym_find_chked(symholderprefix, dlhandle, returntype, symbolname, ...)  do { \
+            char * _error_str_tmp; \
+            void * _sym_addr_tmp = dlsym(dlhandle, #symbolname); \
+            if (!_sym_addr_tmp || (_error_str_tmp = dlerror()) != NULL) { \
+                printf("failed on dlsym: %s", #symbolname); \
+                return (-1); \
+            } \
+            symholderprefix##symbolname = (returntype (*)(__VA_ARGS__)) _sym_addr_tmp; \
+        } while(0)
+
 
 #ifdef __cplusplus
 }
