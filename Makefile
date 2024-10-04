@@ -37,7 +37,7 @@ CC = gcc
 CFLAGS += -std=gnu99 -D_GNU_SOURCE -fPIC -Wall -Wno-unused-function -Wno-unused-variable
 #......
 
-LDFLAGS += -lpthread -lm
+LDFLAGS += -lm
 #......
 
 
@@ -104,16 +104,10 @@ endif
 # Project Specific Configuration
 PREFIX = .
 DISTROOT = $(PREFIX)/dist
-APPS_DISTROOT = $(DISTROOT)/apps
-
-LIBCLOGGER_DIR = $(PREFIX)/deps/libclogger
-
 
 # Given dirs for all source (*.c) files
 SRC_DIR = $(PREFIX)/src
 COMMON_DIR = $(SRC_DIR)/common
-APPS_DIR = $(SRC_DIR)/apps
-
 
 #----------------------------------------------------------
 # shapefile
@@ -152,13 +146,12 @@ COBJS = $(patsubst %.c, %.o, $(notdir $(CSRCS)))
 INCDIRS += -I$(PREFIX) \
 	-I$(SRC_DIR) \
 	-I$(COMMON_DIR) \
-	-I$(LIBCLOGGER_DIR)/include \
-	-I$(SHAPEFILE_DIR) \
+	-I$(SHAPEFILE_DIR)
 #...
 
 
 ifeq ($(MINGW_FLAG), 1)
-	MINGW_CSRCS = $(COMMON_DIR)/win32/syslog-client.c
+	###MINGW_CSRCS = $(COMMON_DIR)/win32/syslog-client.c
 	MINGW_LINKS = -lws2_32
 else
 	MINGW_CSRCS =
@@ -233,37 +226,11 @@ $(SHAPEFILE_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	ln -s $@ $(SHAPEFILE_DYNAMIC_LIB)
 #----------------------------------------------------------
 
-
-apps: dist test_shapefile.exe.$(OSARCH) test_shapefiledll.exe.$(OSARCH)
-
-
-# -lrt for Linux
-test_shapefile.exe.$(OSARCH): $(APPS_DIR)/test_shapefile/app_main.c
-	@echo Building test_shapefile.exe.$(OSARCH)
-	$(CC) $(CFLAGS) $< $(INCDIRS) \
-	-o $@ \
-	$(SHAPEFILE_STATIC_LIB) \
-	$(LDFLAGS) \
-	$(MINGW_LINKS)
-	ln -sf $@ test_shapefile
-
-
-test_shapefiledll.exe.$(OSARCH): $(APPS_DIR)/test_shapefile/app_main.c
-	@echo Building test_shapefiledll.exe.$(OSARCH)
-	$(CC) $(CFLAGS) $< $(INCDIRS) \
-	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/libs:$(PREFIX)/libs/lib' \
-	-o $@ \
-	$(SHAPEFILE_DYNAMIC_LIB) \
-	$(LDFLAGS) \
-	$(MINGW_LINKS)
-	ln -sf $@ test_shapefiledll
-
-
 dist: all
 	@mkdir -p $(SHAPEFILE_DISTROOT)/include/common
 	@mkdir -p $(SHAPEFILE_DISTROOT)/include/shapefile
 	@mkdir -p $(SHAPEFILE_DIST_LIBDIR)
-	@cp $(COMMON_DIR)/unitypes.h $(SHAPEFILE_DISTROOT)/include/common/
+	@cp $(COMMON_DIR)/basetype.h $(SHAPEFILE_DISTROOT)/include/common/
 	@cp $(SHAPEFILE_DIR)/shapefile_api.h $(SHAPEFILE_DISTROOT)/include/shapefile/
 	@cp $(SHAPEFILE_DIR)/shapefile_def.h $(SHAPEFILE_DISTROOT)/include/shapefile/
 	@cp $(PREFIX)/$(SHAPEFILE_STATIC_LIB).$(OSARCH) $(SHAPEFILE_DIST_LIBDIR)/
@@ -280,19 +247,6 @@ clean:
 	-rm -f $(SHAPEFILE_DYNAMIC_LIB)
 	-rm -f $(SHAPEFILE_STATIC_LIB).$(OSARCH)
 	-rm -f $(SHAPEFILE_DYNAMIC_LIB).$(OSARCH)
-	-rm -rf ./msvc/libshapefile/build
-	-rm -rf ./msvc/libshapefile/target
-	-rm -rf ./msvc/libshapefile_dll/build
-	-rm -rf ./msvc/libshapefile_dll/target
-	-rm -rf ./msvc/test_shapefile/build
-	-rm -rf ./msvc/test_shapefile/target
-	-rm -rf ./msvc/test_shapefiledll/build
-	-rm -rf ./msvc/test_shapefiledll/target
-	-rm -f test_shapefile.exe.$(OSARCH)
-	-rm -f test_shapefiledll.exe.$(OSARCH)
-	-rm -f test_shapefile
-	-rm -f test_shapefiledll
-	-rm -f ./msvc/*.VC.db
 
 
 cleanall: clean

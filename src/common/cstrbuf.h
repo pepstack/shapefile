@@ -41,7 +41,7 @@ extern "C"
 #endif
 
 #include "memapi.h"
-#include "unitypes.h"
+#include "basetype.h"
 
 
 #ifndef cstr_allocate_blocksize

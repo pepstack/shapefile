@@ -35,7 +35,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
-#include "shapefile_api.h"
+#include "shapefile_i.h"
 
 
 typedef struct shape_tree_node
@@ -74,27 +74,6 @@ typedef struct shape_tree_root
  */
 
 #define SHP_SPLIT_RATIO  0.55
-
-/**
- * A realloc cover function that will access a 0 pointer as a valid input
- */
-static void* SfRealloc (void * pMem, int nNewSize)
-{
-    void *p;
-    if (pMem == 0) {
-        p = malloc(nNewSize);
-        if (!p) {
-            exit(EXIT_OUTMEMORY);
-        }
-        return p;
-    } else {
-        p = realloc (pMem, nNewSize);
-        if (!p) {
-            exit(EXIT_OUTMEMORY);
-        }
-        return p;
-    }
-}
 
 /**
  * Initialize a tree node

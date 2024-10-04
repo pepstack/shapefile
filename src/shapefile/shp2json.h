@@ -51,7 +51,7 @@
 #ifndef _SHP2JSON_H_INCLUDED
 #define _SHP2JSON_H_INCLUDED
 
-#include "shapefile_api.h"
+#include "shapefile_i.h"
 
 
 #endif /* _SHP2JSON_H_INCLUDED */

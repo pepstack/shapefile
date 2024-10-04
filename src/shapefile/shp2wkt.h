@@ -71,7 +71,7 @@
  #pragma warning (disable : 4996)
 #endif
 
-#include "shapefile_api.h"
+#include "shapefile_i.h"
 
 
 static int Point2WKT (const SHPObject *pObj, char *pbBuf, double offX, double offY, int dig)

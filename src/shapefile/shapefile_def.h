@@ -51,8 +51,30 @@
 extern "C" {
 #endif
 
-#include <common/unitypes.h>
-#include <common/bo.h>
+#if defined (_SVR4) || defined (SVR4) || defined (__OpenBSD__) || \
+    defined (_sgi) || defined (__sun) || defined (sun) || \
+    defined (__digital__) || defined (__HP_cc)
+    # include <inttypes.h>
+#elif defined (_MSC_VER) && _MSC_VER < 1600
+  # ifndef TYPEDEF_HAS_STDINT
+  #   define TYPEDEF_HAS_STDINT
+    /* VS 2010 (_MSC_VER 1600) has stdint.h */
+    typedef __int8 int8_t;
+    typedef unsigned __int8 uint8_t;
+    typedef __int16 int16_t;
+    typedef unsigned __int16 uint16_t;
+    typedef __int32 int32_t;
+    typedef unsigned __int32 uint32_t;
+    typedef __int64 int64_t;
+    typedef unsigned __int64 uint64_t;
+  # endif
+#elif defined (_AIX)
+    # include <sys/inttypes.h>
+#else
+    # include <inttypes.h>
+#endif
+
+//#include <common/basetype.h>
 
 #if defined(SHAPEFILE_DLL)
 /* win32 dynamic dll */
@@ -80,8 +102,8 @@ typedef int SHAPEFILE_RESULT;
 /*
  * WKB_ByteOrder: 1 byte
  */
-#define WKB_BYTEORDER_NDR          ((ub1) 0x01)  /* little endian */
-#define WKB_BYTEORDER_XDR          ((ub1) 0x00)  /* big endian */
+#define WKB_BYTEORDER_NDR          ((unsigned char) 0x01)  /* little endian */
+#define WKB_BYTEORDER_XDR          ((unsigned char) 0x00)  /* big endian */
 
 /*
  * WKB_Type: 4 bytes
@@ -231,54 +253,54 @@ typedef struct LinearRing
 
 typedef struct WKBGeometryHeader
 {
-    ub1       byteOrder;
-    ub4       wkbType; 
+    unsigned char  byteOrder;
+    uint32_t       wkbType; 
 } WKBGeometryHeader;
 
 typedef struct WKBPoint
 {
-    ub1         byteOrder;
-    ub4         wkbType;
+    unsigned char    byteOrder;
+    uint32_t         wkbType;
     struct PointXY point;
 } WKBPoint;
 
 typedef struct WKBLineString
 {
-    ub1         byteOrder;
-    ub4         wkbType;
-    ub4         numPoints;
+    unsigned char    byteOrder;
+    uint32_t         wkbType;
+    uint32_t         numPoints;
     struct PointXY points[1];
 } WKBLineString;
 
 typedef struct WKBPolygon
 {
-    ub1         byteOrder;
-    ub4         wkbType;
-    ub4         numRings;
+    unsigned char    byteOrder;
+    uint32_t         wkbType;
+    uint32_t         numRings;
     LinearRing  rings[1];
 } WKBPolygon;
 
 typedef struct WKBMultiPoint
 {
-    ub1         byteOrder;
-    ub4         wkbType;
-    ub4         numPoints;
+    unsigned char    byteOrder;
+    uint32_t         wkbType;
+    uint32_t         numPoints;
     WKBPoint    points[1];
 } WKBMultiPoint;
 
 typedef struct WKBMultiLineString
 {
-    ub1         byteOrder;
-    ub4         wkbType;
-    ub4         numLineStrings;
+    unsigned char    byteOrder;
+    uint32_t         wkbType;
+    uint32_t         numLineStrings;
     WKBLineString  lineStrings[1];
 } WKBMultiLineString;
  
 typedef struct WKBMultiPolygon
 {
-    ub1      byteOrder;
-    ub4      wkbType;
-    ub4      numPolygons;
+    unsigned char byteOrder;
+    uint32_t      wkbType;
+    uint32_t      numPolygons;
     WKBPolygon  polygons[1];
 } WKBMultiPolygon;
 

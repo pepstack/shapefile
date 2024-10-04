@@ -49,7 +49,8 @@ extern "C" {
 static const char LIBNAME[] = "shapefile";
 static const char LIBVERSION[] = "0.0.1";
 
-
+#include <common/basetype.h>
+#include <common/bo.h>
 #include <common/mscrtdbg.h>
 #include <common/cstrbuf.h>
 #include <common/memapi.h>
@@ -157,7 +158,7 @@ typedef struct _SHPRectTree
 /**
  * Swap double
  */
-STATIC_INLINE void SwapDouble(double *a, double *b)
+static void SwapDouble(double *a, double *b)
 {
     double t = *a;
     *a = *b;
@@ -167,7 +168,7 @@ STATIC_INLINE void SwapDouble(double *a, double *b)
 /**
  * Swap SHPPointType
  */
-STATIC_INLINE void SwapPointType(SHPPointType *p, SHPPointType *q)
+static void SwapPointType(SHPPointType *p, SHPPointType *q)
 {
     double t = p->x;
     p->x = q->x;
@@ -182,7 +183,7 @@ STATIC_INLINE void SwapPointType(SHPPointType *p, SHPPointType *q)
 /**
  * A realloc cover function that will access a 0 pointer as a valid input
  */
-STATIC_INLINE void* SfRealloc (void * pMem, int nNewSize)
+static void * SfRealloc (void * pMem, int nNewSize)
 {
     void *p;
     if (pMem == 0) {
@@ -201,7 +202,7 @@ STATIC_INLINE void* SfRealloc (void * pMem, int nNewSize)
 }
 
 
-STATIC_INLINE int SHPTypeHasParts(int nSHPType)
+static int SHPTypeHasParts(int nSHPType)
 {
     return (nSHPType == SHPT_POLYGON ||
         nSHPType == SHPT_ARC ||
@@ -213,7 +214,7 @@ STATIC_INLINE int SHPTypeHasParts(int nSHPType)
 }
 
 
-STATIC_INLINE void StringToUpper (char *str, int len)
+static void StringToUpper (char *str, int len)
 {
     char *p = str;
     while (len-- > 0 && *p) {

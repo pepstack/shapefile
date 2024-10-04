@@ -59,7 +59,7 @@
 #   pragma warning (disable : 4996)
 #endif
 
-#include "shapefile_api.h"
+#include "shapefile_i.h"
 
 
 static ub1 wkb_bo_xdr = WKB_BYTEORDER_XDR;

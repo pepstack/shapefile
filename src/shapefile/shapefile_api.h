@@ -53,6 +53,7 @@ extern "C" {
 
 #include "shapefile_def.h"
 
+
 SHAPEFILE_API const char * shapefile_lib_version(const char **_libname);
 
 /* -------------------------------------------------------------------- */

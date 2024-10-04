@@ -22,18 +22,17 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
-
 /**
- * @filename   unitypes.h
- *   Universal Definitions and Types, Bob Jenkins, Liang Zhang
+ * @filename   basetype.h
+ *   Base Definitions and Types, Bob Jenkins, Liang Zhang
  *
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.14
  * @create     2019-09-30 12:37:44
- * @update     2021-08-06 15:26:44
+ * @update     2024-10-04
  */
-#ifndef UNITYPES_H_INCLUDED
-#define UNITYPES_H_INCLUDED
+#ifndef BASETYPE_H_INCLUDED
+#define BASETYPE_H_INCLUDED
 
 #if defined(__cplusplus)
 extern "C"
@@ -364,7 +363,7 @@ int snprintf_chkd_V1(char *outputbuf, size_t bufsize, const char *format, ...)
 
     if (len < 0 || len >= (int)bufsize) {
         /* output was truncated due to bufsize limit */
-        len = (int)bufsize - 1;
+        len = (int) bufsize - 1;
 
         /* for MSVC */
         outputbuf[len] = '\0';
@@ -407,6 +406,59 @@ int snprintf_chkd_V2(int exitcode, char *outputbuf, size_t bufsize, const char *
     return len;
 }
 
+
+/**
+ * 新的程序应该使用: snprintf_chk
+ */
+NOWARNING_UNUSED(static)
+int snprintf_safe(char *outputbuf, size_t bufsize, const char *format, ...)
+{
+    int len;
+
+    va_list args;
+    va_start(args, format);
+    len = vsnprintf(outputbuf, bufsize, format, args);
+    va_end(args);
+
+    if (len < 0) {
+        outputbuf[0] = '\0';
+    } else {
+        outputbuf[bufsize - 1] = '\0';
+    }
+
+    /**
+     * if len >= bufsize, output was truncated due to bufsize limit;
+     * if leb < 0, an error ocurred.
+     */
+    return len;
+}
+
+
+/**
+ * 如果失败则中断运行. 初始化时使用这个函数减少代码检查
+ */
+NOWARNING_UNUSED(static)
+int snprintf_chk_abort(char *outputbuf, size_t bufsize, const char *format, ...)
+{
+    int len;
+
+    va_list args;
+    va_start(args, format);
+    len = vsnprintf(outputbuf, bufsize, format, args);
+    va_end(args);
+
+    if (len < 0 || len >= (int) bufsize) {
+        outputbuf[0] = '\0';
+        fprintf(stderr, "(%s:%d) fatal error when calling: vsnprintf.\n", __FILE__, __LINE__);
+        abort();
+        return -1;
+    }
+
+    outputbuf[bufsize - 1] = '\0';
+    return len;
+}
+
+
 #define snprintf_V1    snprintf
 
 
@@ -426,6 +478,7 @@ int snprintf_chkd_V2(int exitcode, char *outputbuf, size_t bufsize, const char *
 #define ptr_cast_to_int64(pv)    ((int64_t) (uint64_t) (void*) (pv))
 #define int64_cast_to_ptr(iv)    ((void*) (uint64_t) (int64_t) (iv))
 
+/* UNUSED!
 #define dlsym_find_chked(symholderprefix, dlhandle, returntype, symbolname, ...)  do { \
             char * _error_str_tmp; \
             void * _sym_addr_tmp = dlsym(dlhandle, #symbolname); \
@@ -435,10 +488,9 @@ int snprintf_chkd_V2(int exitcode, char *outputbuf, size_t bufsize, const char *
             } \
             symholderprefix##symbolname = (returntype (*)(__VA_ARGS__)) _sym_addr_tmp; \
         } while(0)
-
-
+*/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* UNITYPES_H_INCLUDED */
+#endif /* BASETYPE_H_INCLUDED */
