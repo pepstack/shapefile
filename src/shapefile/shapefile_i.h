@@ -54,7 +54,6 @@ static const char LIBVERSION[] = "0.0.1";
 #include <common/mscrtdbg.h>
 #include <common/cstrbuf.h>
 #include <common/memapi.h>
-#include <common/emerglog.h>
 
 #define RTREE_DIMS  2
 #include <common/rtree.h>

@@ -74,8 +74,6 @@ extern "C" {
     # include <inttypes.h>
 #endif
 
-//#include <common/basetype.h>
-
 #if defined(SHAPEFILE_DLL)
 /* win32 dynamic dll */
 # ifdef SHAPEFILE_EXPORTS

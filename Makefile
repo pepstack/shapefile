@@ -34,7 +34,7 @@ CC = gcc
 
 # for gcc-8+
 # -Wno-unused-const-variable
-CFLAGS += -std=gnu99 -D_GNU_SOURCE -fPIC -Wall -Wno-unused-function -Wno-unused-variable
+CFLAGS += -std=gnu11 -D_GNU_SOURCE -fPIC -Wall -Wno-unused-function -Wno-unused-variable
 #......
 
 LDFLAGS += -lm
@@ -230,7 +230,6 @@ dist: all
 	@mkdir -p $(SHAPEFILE_DISTROOT)/include/common
 	@mkdir -p $(SHAPEFILE_DISTROOT)/include/shapefile
 	@mkdir -p $(SHAPEFILE_DIST_LIBDIR)
-	@cp $(COMMON_DIR)/basetype.h $(SHAPEFILE_DISTROOT)/include/common/
 	@cp $(SHAPEFILE_DIR)/shapefile_api.h $(SHAPEFILE_DISTROOT)/include/shapefile/
 	@cp $(SHAPEFILE_DIR)/shapefile_def.h $(SHAPEFILE_DISTROOT)/include/shapefile/
 	@cp $(PREFIX)/$(SHAPEFILE_STATIC_LIB).$(OSARCH) $(SHAPEFILE_DIST_LIBDIR)/
