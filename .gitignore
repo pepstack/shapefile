@@ -37,6 +37,7 @@ dist/
 
 # doxygen generated
 docs/api/
-
+vcoutput/
+vcbuild/
 Debug/
 Release/

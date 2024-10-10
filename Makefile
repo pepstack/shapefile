@@ -106,7 +106,7 @@ PREFIX = .
 DISTROOT = $(PREFIX)/dist
 
 # Given dirs for all source (*.c) files
-SRC_DIR = $(PREFIX)/src
+SRC_DIR = $(PREFIX)/source
 COMMON_DIR = $(SRC_DIR)/common
 
 #----------------------------------------------------------
@@ -128,14 +128,14 @@ SHAPEFILE_DIST_LIBDIR=$(SHAPEFILE_DISTROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
 #...
 
 
-# Set all dirs for C source: './src/a ./src/b'
+# Set all dirs for C source: './source/a ./source/b'
 ALLCDIRS += $(SRCDIR) \
 	$(COMMON_DIR) \
 	$(SHAPEFILE_DIR)
 #...
 
 
-# Get pathfiles for C source files: './src/a/1.c ./src/b/2.c'
+# Get pathfiles for C source files: './source/a/1.c ./source/b/2.c'
 CSRCS := $(foreach cdir, $(ALLCDIRS), $(wildcard $(cdir)/*.c))
 
 # Get names of object files: '1.o 2.o'

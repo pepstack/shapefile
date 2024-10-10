@@ -30,7 +30,7 @@
  * @author     350137278@qq.com
  * @version    0.0.1
  * @create     2020-06-12 21:12:22
- * @update     2020-07-09 17:38:42
+ * @update     2024-10-10 17:38:42
  */
 #ifndef MSCRTDBG_H_
 #define MSCRTDBG_H_
@@ -49,13 +49,12 @@ extern "C" {
         /** memory leak auto-detect in MSVC
          * https://blog.csdn.net/lyc201219/article/details/62219503
          */
+        # include <crtdbg.h>
         # ifndef _CRTDBG_MAP_ALLOC
             # define _CRTDBG_MAP_ALLOC
         # endif
-
         # include <stdlib.h>
         # include <malloc.h>
-        # include <crtdbg.h>
 
         # ifndef WINDOWS_CRTDBG_ON
             # define WINDOWS_CRTDBG_ON  _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
