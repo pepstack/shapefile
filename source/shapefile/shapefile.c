@@ -16,7 +16,7 @@
  * option is discussed in more detail in shapelib.html.
  *
  * --
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -145,7 +145,7 @@ void SHPWriteHeader (SHPHandle psSHP)
     if (!_host_big_endian) {
         BO_swap_dword(abyHeader+24);
     }
-  
+
     if (fseek(psSHP->fpSHX, 0, 0) != 0 || fwrite(abyHeader, 100, 1, psSHP->fpSHX) != 1) {
         return;
     }
@@ -187,7 +187,7 @@ void SHPWriteHeader (SHPHandle psSHP)
 static void SHPHasZM (int nSHPType, int *bHasZ, int *bHasM)
 {
     if (nSHPType == SHPT_ARCM ||
-        nSHPType == SHPT_POINTM || 
+        nSHPType == SHPT_POINTM ||
         nSHPType == SHPT_POLYGONM ||
         nSHPType == SHPT_MULTIPOINTM) {
         if (bHasM) {
@@ -196,10 +196,10 @@ static void SHPHasZM (int nSHPType, int *bHasZ, int *bHasM)
         if (bHasZ) {
             *bHasZ = SHAPEFILE_FALSE;
         }
-    } else if (nSHPType == SHPT_ARCZ || 
-        nSHPType == SHPT_POINTZ || 
+    } else if (nSHPType == SHPT_ARCZ ||
+        nSHPType == SHPT_POINTZ ||
         nSHPType == SHPT_POLYGONZ ||
-        nSHPType == SHPT_MULTIPOINTZ || 
+        nSHPType == SHPT_MULTIPOINTZ ||
         nSHPType == SHPT_MULTIPATCH) {
         if (bHasM) {
             *bHasM = SHAPEFILE_TRUE;
@@ -246,8 +246,8 @@ SHPHandle SHPOpen (const char * pszLayer, const char * pszAccess)
    *   on the passed in filename we will strip it off */
     pszBasename = (char *) malloc(strlen(pszLayer)+5);
     strcpy(pszBasename, pszLayer);
-    for (i = (int) strlen(pszBasename)-1; i > 0 && 
-        pszBasename[i] != '.' && pszBasename[i] != '/' && 
+    for (i = (int) strlen(pszBasename)-1; i > 0 &&
+        pszBasename[i] != '.' && pszBasename[i] != '/' &&
         pszBasename[i] != '\\'; i--) {
         /* do nothing */
     }
@@ -280,7 +280,7 @@ SHPHandle SHPOpen (const char * pszLayer, const char * pszAccess)
         sprintf(pszFullname, "%s.SHX", pszBasename);
         psSHP->fpSHX = fopen(pszFullname, pszAccess);
     }
-    
+
     if (psSHP->fpSHX == 0) {
         fclose(psSHP->fpSHP);
         free(psSHP);
@@ -452,7 +452,7 @@ void SHPGetInfo(SHPHandle psSHP,
     if (psSHP == 0) {
         return;
     }
-  
+
     if (pnEntities != 0) {
         *pnEntities = psSHP->nRecords;
     }
@@ -482,11 +482,11 @@ int SHPGetType(SHPHandle hSHP, int *bHasZ, int *bHasM)
     }
 
     switch(hSHP->nShapeType) {
-    case SHPT_POLYGON:  
-    case SHPT_POLYGONZ:    
+    case SHPT_POLYGON:
+    case SHPT_POLYGONZ:
     case SHPT_POLYGONM:
         return SHAPE_TYPE_POLYGON;
-  
+
     case SHPT_ARC:
     case SHPT_ARCZ:
     case SHPT_ARCM:
@@ -607,7 +607,7 @@ SHPHandle SHPCreate(const char * pszLayer, int nShapeType)
 
 
 /**
- * Compute a bounds rectangle for a shape, and set it into the 
+ * Compute a bounds rectangle for a shape, and set it into the
  *  indicated location in the record
  */
 static void _SHPSetBounds(ub1 * pabyRec, SHPObject * psShape)
@@ -641,7 +641,7 @@ void SHPComputeExtents(SHPObject * psObject)
         psObject->dfZMin = psObject->dfZMax = psObject->padfZ[0];
         psObject->dfMMin = psObject->dfMMax = psObject->padfM[0];
     }
-    
+
     for (i = 0; i < psObject->nVertices; i++) {
         psObject->dfXMin = MIN_V2(psObject->dfXMin, psObject->padfX[i]);
         psObject->dfYMin = MIN_V2(psObject->dfYMin, psObject->padfY[i]);
@@ -692,7 +692,7 @@ SHPObject *SHPCreateObject (
         psObject->panPartStart[0] = 0;
         psObject->panPartStart[psObject->nParts] = nVertices;
         psObject->panPartType[0] = SHPP_RING;
-    
+
         for (i = 0; i < nParts; i++) {
             psObject->panPartStart[i] = panPartStart[i];
             if (panPartType != 0) {
@@ -717,7 +717,7 @@ SHPObject *SHPCreateObject (
 
         SHAPEFILE_ASSERT(padfX != 0);
         SHAPEFILE_ASSERT(padfY != 0);
-    
+
         for (i = 0; i < nVertices; i++) {
             psObject->padfX[i] = padfX[i];
             psObject->padfY[i] = padfY[i];
@@ -743,12 +743,12 @@ SHPObject *SHPCreateObject (
 SHPObject * SHPCreateObject2 (
     int nSHPType,
     int nShapeId,
-    int nParts, 
+    int nParts,
     const int *panPartStart,
     const int *panPartType,
     int nVertices,
     const SHPPointType *padXY,
-    const double *padfZ, 
+    const double *padfZ,
     const double * padfM)
 {
     SHPObject   *psObject;
@@ -770,7 +770,7 @@ SHPObject * SHPCreateObject2 (
         psObject->panPartStart[0] = 0;
         psObject->panPartStart[psObject->nParts] = nVertices;
         psObject->panPartType[0] = SHPP_RING;
-    
+
         for (i = 0; i < nParts; i++) {
             psObject->panPartStart[i] = panPartStart[i];
             if (panPartType != 0) {
@@ -794,11 +794,11 @@ SHPObject * SHPCreateObject2 (
         psObject->padfM = (double *) calloc(sizeof(double),nVertices);
 
         SHAPEFILE_ASSERT(padXY != 0);
-    
+
         for (i = 0; i < nVertices; i++) {
             psObject->padfX[i] = padXY[i].x;
             psObject->padfY[i] = padXY[i].y;
-    
+
             if (padfZ != 0 && bHasZ) {
                 psObject->padfZ[i] = padfZ[i];
             }
@@ -852,7 +852,7 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
     ub1   *pabyRec;
     int    i32;
     int    nRecordOffset, i, nRecordSize = 0;
-  
+
     psSHP->bUpdated = SHAPEFILE_TRUE;
 
     /* Ensure that shape object matches the type of the file it is being written to */
@@ -974,9 +974,9 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
 
         /* Write the M values, if any */
         if (psObject->nSHPType == SHPT_POLYGONM || psObject->nSHPType == SHPT_ARCM
-#ifndef DISABLE_MULTIPATCH_MEASURE            
+#ifndef DISABLE_MULTIPATCH_MEASURE
             || psObject->nSHPType == SHPT_MULTIPATCH
-#endif            
+#endif
             || psObject->nSHPType == SHPT_POLYGONZ || psObject->nSHPType == SHPT_ARCZ) {
             ByteCopy(&(psObject->dfMMin), pabyRec + nRecordSize, 8);
             if (_host_big_endian) {
@@ -1008,7 +1008,7 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
         psObject->nSHPType == SHPT_MULTIPOINTM) {
         /* Extract vertices for a MultiPoint */
         int i, nPoints;
-  
+
         nPoints = psObject->nVertices;
 
         _SHPSetBounds(pabyRec + 12, psObject);
@@ -1068,9 +1068,9 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
             if (_host_big_endian) {
                 BO_swap_qword(pabyRec + nRecordSize);
                 nRecordSize += 8;
-             
+
                 ByteCopy(&(psObject->dfMMax), pabyRec + nRecordSize, 8);
-             
+
                 BO_swap_qword(pabyRec + nRecordSize);
                 nRecordSize += 8;
 
@@ -1081,9 +1081,9 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
                 }
             } else {
                 nRecordSize += 8;
-                
+
                 ByteCopy(&(psObject->dfMMax), pabyRec + nRecordSize, 8);
-                
+
                 nRecordSize += 8;
 
                 for (i = 0; i < psObject->nVertices; i++) {
@@ -1092,7 +1092,7 @@ int SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject)
                 }
             }
         }
-    } else if (psObject->nSHPType == SHPT_POINT || 
+    } else if (psObject->nSHPType == SHPT_POINT ||
         psObject->nSHPType == SHPT_POINTZ ||
         psObject->nSHPType == SHPT_POINTM) {
         /* Write point */
@@ -1241,7 +1241,7 @@ SHPObject * SHPReadObject(SHPHandle psSHP, int hEntity)
     /* Extract vertices for a Polygon or Arc */
     if (SHPTypeHasParts(psShape->nSHPType)) {
         int nPoints, nParts, i, nOffset;
-  
+
         /* Extract part/point count, and build vertex and part arrays to proper size */
         memcpy(&nPoints, psSHP->pabyRec + 40 + 8, 4);
         memcpy(&nParts, psSHP->pabyRec + 36 + 8, 4);
@@ -1487,7 +1487,7 @@ SHPObject * SHPReadObject(SHPHandle psSHP, int hEntity)
 
         /* If we have a Z coordinate, collect that now */
         if (psShape->nSHPType == SHPT_POINTZ) {
-            memcpy(psShape->padfZ, psSHP->pabyRec + nOffset, 8);        
+            memcpy(psShape->padfZ, psSHP->pabyRec + nOffset, 8);
             if (_host_big_endian) {
                 BO_swap_qword(psShape->padfZ);
             }
@@ -1500,7 +1500,7 @@ SHPObject * SHPReadObject(SHPHandle psSHP, int hEntity)
      * (options), and the M shapes.
      */
         if (psSHP->panRecSize[hEntity]+8 >= nOffset + 8) {
-            memcpy(psShape->padfM, psSHP->pabyRec + nOffset, 8);        
+            memcpy(psShape->padfM, psSHP->pabyRec + nOffset, 8);
             if (_host_big_endian) {
                 BO_swap_qword(psShape->padfM);
             }
@@ -1547,7 +1547,7 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds, double 
         nSHPType == SHPT_POLYGONZ ||
         nSHPType == SHPT_POLYGONM ||
         nSHPType == SHPT_ARCZ ||
-        nSHPType == SHPT_ARCM || 
+        nSHPType == SHPT_ARCM ||
         nSHPType == SHPT_MULTIPATCH) {
         int nPoints, nParts, nOffset;
 
@@ -1573,7 +1573,7 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds, double 
             BO_swap_qword(&(Bounds->YMin));
             BO_swap_qword(&(Bounds->XMax));
             BO_swap_qword(&(Bounds->YMax));
-        }       
+        }
 
         nOffset = 44 + 8 + 4*nParts;
 
@@ -1583,8 +1583,8 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds, double 
 
         nOffset += 16*nPoints;
 
-        if (nSHPType == SHPT_POLYGONZ || 
-            nSHPType == SHPT_ARCZ || 
+        if (nSHPType == SHPT_POLYGONZ ||
+            nSHPType == SHPT_ARCZ ||
             nSHPType == SHPT_MULTIPATCH) {
             memcpy(&(Bounds->ZMin), psSHP->pabyRec + nOffset, 8);
             memcpy(&(Bounds->ZMax), psSHP->pabyRec + nOffset + 8, 8);
@@ -1605,17 +1605,17 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds, double 
                 BO_swap_qword(&(Bounds->MMin));
                 BO_swap_qword(&(Bounds->MMax));
             }
-        }        
+        }
     } else if (nSHPType == SHPT_MULTIPOINT ||
-        nSHPType == SHPT_MULTIPOINTM || 
+        nSHPType == SHPT_MULTIPOINTM ||
         nSHPType == SHPT_MULTIPOINTZ) {
         int nPoints, nOffset;
         memcpy(&nPoints, psSHP->pabyRec + 44, 4);
- 
+
         if (_host_big_endian) {
             BO_swap_dword(&nPoints);
         }
-  
+
         if (nPoints <= 0) {
             return (SHPT_NULL);
         }
@@ -1653,10 +1653,10 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds, double 
             if (_host_big_endian) {
                 BO_swap_qword(&(Bounds->MMin));
                 BO_swap_qword(&(Bounds->MMax));
-            }           
+            }
         }
     } else if (nSHPType == SHPT_POINT ||
-        nSHPType == SHPT_POINTM || 
+        nSHPType == SHPT_POINTM ||
         nSHPType == SHPT_POINTZ) {
         int nOffset;
 
@@ -1671,7 +1671,7 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds, double 
         nOffset = 20 + 8;
 
         if (nSHPType == SHPT_POINTZ) {
-            memcpy(&Bounds->ZMin, psSHP->pabyRec + nOffset, 8);        
+            memcpy(&Bounds->ZMin, psSHP->pabyRec + nOffset, 8);
             if (_host_big_endian) {
                 BO_swap_qword(&Bounds->ZMin);
             }
@@ -1679,7 +1679,7 @@ int SHPReadObjectBounds(SHPHandle psSHP, int hEntity, SHPBounds *Bounds, double 
         }
 
         if (psSHP->panRecSize[hEntity]+8 >= nOffset + 8) {
-            memcpy(&Bounds->MMin, psSHP->pabyRec + nOffset, 8);        
+            memcpy(&Bounds->MMin, psSHP->pabyRec + nOffset, 8);
             if (_host_big_endian) {
                 BO_swap_qword(&Bounds->MMin);
             }
@@ -1729,7 +1729,7 @@ SHAPEFILE_API int SHPReadObjectEnvelope(SHPHandle psSHP, int hEntity, SHPEnvelop
         nSHPType == SHPT_POLYGONZ ||
         nSHPType == SHPT_POLYGONM ||
         nSHPType == SHPT_ARCZ ||
-        nSHPType == SHPT_ARCM || 
+        nSHPType == SHPT_ARCM ||
         nSHPType == SHPT_MULTIPATCH) {
         int nPoints, nParts;
 
@@ -1757,15 +1757,15 @@ SHAPEFILE_API int SHPReadObjectEnvelope(SHPHandle psSHP, int hEntity, SHPEnvelop
             BO_swap_qword(&(env->YMax));
         }
     } else if (nSHPType == SHPT_MULTIPOINT ||
-        nSHPType == SHPT_MULTIPOINTM || 
+        nSHPType == SHPT_MULTIPOINTM ||
         nSHPType == SHPT_MULTIPOINTZ) {
         int nPoints;
         memcpy(&nPoints, psSHP->pabyRec + 44, 4);
- 
+
         if (_host_big_endian) {
             BO_swap_dword(&nPoints);
         }
-  
+
         if (nPoints <= 0) {
             return (SHPT_NULL);
         }
@@ -1782,7 +1782,7 @@ SHAPEFILE_API int SHPReadObjectEnvelope(SHPHandle psSHP, int hEntity, SHPEnvelop
             BO_swap_qword(&(env->YMax));
         }
     } else if (nSHPType == SHPT_POINT ||
-        nSHPType == SHPT_POINTM || 
+        nSHPType == SHPT_POINTM ||
         nSHPType == SHPT_POINTZ) {
         memcpy(&env->XMin, psSHP->pabyRec + 12, 8);
         memcpy(&env->YMin, psSHP->pabyRec + 20, 8);
@@ -1856,7 +1856,7 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
             BO_swap_dword(&nPoints);
             BO_swap_dword(&nParts);
         }
-    
+
         if (! nPoints) {
             return SHAPEFILE_FALSE;
         }
@@ -1978,8 +1978,8 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
                     memcpy(psShape->padfM + i, psSHP->pabyRec + nOffset + 16 + i*8, 8);
                 }
             }
-        }        
-    } else if (psShape->nSHPType == SHPT_MULTIPOINT || 
+        }
+    } else if (psShape->nSHPType == SHPT_MULTIPOINT ||
         psShape->nSHPType == SHPT_MULTIPOINTM ||
         psShape->nSHPType == SHPT_MULTIPOINTZ) {
         /* Extract vertices for a MultiPoint */
@@ -2015,7 +2015,7 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
                 memcpy(&psShape->pPoints[i].x, psSHP->pabyRec + 48 + 16 * i, 8);
                 memcpy(&psShape->pPoints[i].y, psSHP->pabyRec + 48 + 16 * i + 8, 8);
             }
-        }        
+        }
 
         nOffset = 48 + 16*nPoints;
 
@@ -2105,7 +2105,7 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
 
         /* If we have a Z coordinate, collect that now */
         if (psShape->nSHPType == SHPT_POINTZ) {
-            memcpy(psShape->padfZ, psSHP->pabyRec + nOffset, 8);        
+            memcpy(psShape->padfZ, psSHP->pabyRec + nOffset, 8);
             if (_host_big_endian) {
                 BO_swap_qword(psShape->padfZ);
             }
@@ -2118,7 +2118,7 @@ int SHPReadObjectEx(SHPHandle psSHP, int hEntity, SHPObjectEx *psShape)
          *  (options), and the M shapes
          */
         if (psSHP->panRecSize[hEntity]+8 >= nOffset + 8) {
-            memcpy(psShape->padfM, psSHP->pabyRec + nOffset, 8);        
+            memcpy(psShape->padfM, psSHP->pabyRec + nOffset, 8);
             if (_host_big_endian) {
                 BO_swap_qword(psShape->padfM);
             }
@@ -2157,7 +2157,7 @@ const char * SHPTypeName(int nSHPType)
 
     case SHPT_MULTIPOINT:
         return "MultiPoint";
-    
+
     case SHPT_POINTZ:
         return "PointZ";
 
@@ -2169,7 +2169,7 @@ const char * SHPTypeName(int nSHPType)
 
     case SHPT_MULTIPOINTZ:
         return "MultiPointZ";
-    
+
     case SHPT_POINTM:
         return "PointM";
 
@@ -2199,7 +2199,7 @@ const char * SHPPartTypeName(int nPartType)
     switch(nPartType) {
     case SHPP_TRISTRIP:
         return "TriangleStrip";
-    
+
     case SHPP_TRIFAN:
         return "TriangleFan";
 
@@ -2262,8 +2262,8 @@ int SHPRewindObject(SHPObject *psObject)
     int  iOpRing, bAltered = 0;
 
     /* Do nothing if this is not a polygon object */
-    if (psObject->nSHPType != SHPT_POLYGON && 
-        psObject->nSHPType != SHPT_POLYGONZ && 
+    if (psObject->nSHPType != SHPT_POLYGON &&
+        psObject->nSHPType != SHPT_POLYGONZ &&
         psObject->nSHPType != SHPT_POLYGONM) {
         return 0;
     }
@@ -2309,9 +2309,9 @@ int SHPRewindObject(SHPObject *psObject)
 
                 if ((psObject->padfY[iEdge+nVertStart] < dfTestY && psObject->padfY[iNext+nVertStart] >= dfTestY) ||
                     (psObject->padfY[iNext+nVertStart] < dfTestY && psObject->padfY[iEdge+nVertStart] >= dfTestY)) {
-                    if (psObject->padfX[iEdge+nVertStart] + 
+                    if (psObject->padfX[iEdge+nVertStart] +
                         (dfTestY - psObject->padfY[iEdge+nVertStart]) / (psObject->padfY[iNext+nVertStart] -
-                        psObject->padfY[iEdge+nVertStart]) * 
+                        psObject->padfY[iEdge+nVertStart]) *
                         (psObject->padfX[iNext+nVertStart] - psObject->padfX[iEdge+nVertStart]) < dfTestX) {
                         bInner = !bInner;
                     }
@@ -2341,20 +2341,20 @@ int SHPRewindObject(SHPObject *psObject)
 
                 /* Swap X */
                 dfSaved = psObject->padfX[nVertStart+i];
-                psObject->padfX[nVertStart+i] = 
+                psObject->padfX[nVertStart+i] =
                 psObject->padfX[nVertStart+nVertCount-i-1];
                 psObject->padfX[nVertStart+nVertCount-i-1] = dfSaved;
 
                 /* Swap Y */
                 dfSaved = psObject->padfY[nVertStart+i];
-                psObject->padfY[nVertStart+i] = 
+                psObject->padfY[nVertStart+i] =
                 psObject->padfY[nVertStart+nVertCount-i-1];
                 psObject->padfY[nVertStart+nVertCount-i-1] = dfSaved;
 
                 /* Swap Z */
                 if (psObject->padfZ) {
                     dfSaved = psObject->padfZ[nVertStart+i];
-                    psObject->padfZ[nVertStart+i] = 
+                    psObject->padfZ[nVertStart+i] =
                     psObject->padfZ[nVertStart+nVertCount-i-1];
                     psObject->padfZ[nVertStart+nVertCount-i-1] = dfSaved;
                 }
@@ -2362,7 +2362,7 @@ int SHPRewindObject(SHPObject *psObject)
                 /* Swap M */
                 if (psObject->padfM) {
                     dfSaved = psObject->padfM[nVertStart+i];
-                    psObject->padfM[nVertStart+i] = 
+                    psObject->padfM[nVertStart+i] =
                     psObject->padfM[nVertStart+nVertCount-i-1];
                     psObject->padfM[nVertStart+nVertCount-i-1] = dfSaved;
                 }
@@ -2378,8 +2378,8 @@ int SHPRewindObjectEx (SHPObjectEx *psObject)
  int  iOpRing, bAltered = 0;
 
     /* Do nothing if this is not a polygon object */
-    if (psObject->nSHPType != SHPT_POLYGON && 
-        psObject->nSHPType != SHPT_POLYGONZ && 
+    if (psObject->nSHPType != SHPT_POLYGON &&
+        psObject->nSHPType != SHPT_POLYGONZ &&
         psObject->nSHPType != SHPT_POLYGONM) {
         return 0;
     }
@@ -2425,8 +2425,8 @@ int SHPRewindObjectEx (SHPObjectEx *psObject)
 
                 if ((psObject->pPoints[iEdge+nVertStart].y < dfTestY && psObject->pPoints[iNext+nVertStart].y >= dfTestY) ||
                     (psObject->pPoints[iNext+nVertStart].y < dfTestY && psObject->pPoints[iEdge+nVertStart].y >= dfTestY)) {
-                    if (psObject->pPoints[iEdge+nVertStart].x + (dfTestY - psObject->pPoints[iEdge+nVertStart].y) / 
-                        (psObject->pPoints[iNext+nVertStart].y - psObject->pPoints[iEdge+nVertStart].y) * 
+                    if (psObject->pPoints[iEdge+nVertStart].x + (dfTestY - psObject->pPoints[iEdge+nVertStart].y) /
+                        (psObject->pPoints[iNext+nVertStart].y - psObject->pPoints[iEdge+nVertStart].y) *
                         (psObject->pPoints[iNext+nVertStart].x - psObject->pPoints[iEdge+nVertStart].x) < dfTestX) {
                         bInner = !bInner;
                     }
@@ -2877,7 +2877,7 @@ int SHPObjectExValidatePolygon (SHPObjectEx *psObject, int isCCW)
 }
 
 
-int SHPObject2WKB (const SHPObject *psObject, void *wkbBuffer, double offsetX, double offsetY, double offsetZ, double offsetM)  
+int SHPObject2WKB (const SHPObject *psObject, void *wkbBuffer, double offsetX, double offsetY, double offsetZ, double offsetM)
 {
     switch (psObject->nSHPType) {
     case SHPT_NULL:

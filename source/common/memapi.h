@@ -24,11 +24,11 @@
  **********************************************************************/
 
 /**
- * @filename   memapi.h
+ * @file memapi.h
  *  memory helper api both for linux and windows.
  *
  * @author     Liang Zhang <350137278@qq.com>
- * @version    0.0.10
+ * @version 0.0.15
  * @create     2018-10-25 09:09:10
  * @update     2021-06-18 17:27:33
  */

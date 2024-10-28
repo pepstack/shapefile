@@ -23,14 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **********************************************************************/
 /**
- * @filename   emerglog.h
+ * @file emerglog.h
  *  syslog for EMERG event message.
  *
  *  see syslog as below:
  *    $ cat /var/log/messages | grep $ident
  *
  * @author     Liang Zhang <350137278@qq.com>
- * @version    0.0.10
+ * @version 0.0.15
  * @create     2017-05-02 12:02:50
  * @update     2021-06-22 18:29:50
  */

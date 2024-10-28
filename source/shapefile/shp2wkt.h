@@ -15,7 +15,7 @@
  * option is discussed in more detail in shapelib.html.
  *
  * --
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -36,15 +36,15 @@
  *****************************************************************************/
 
 /*
- * Well-known text (WKT) is a text markup language for representing vector 
- * geometry objects on a map, spatial reference systems of spatial objects 
- * and transformations between spatial reference systems. A binary equivalent, 
- * known as well-known binary (WKB) is used to transfer and store the same 
- * information on databases, such as PostGIS, Microsoft SQL Server and DB2. 
- * The formats were originally defined by the Open Geospatial Consortium (OGC) 
+ * Well-known text (WKT) is a text markup language for representing vector
+ * geometry objects on a map, spatial reference systems of spatial objects
+ * and transformations between spatial reference systems. A binary equivalent,
+ * known as well-known binary (WKB) is used to transfer and store the same
+ * information on databases, such as PostGIS, Microsoft SQL Server and DB2.
+ * The formats were originally defined by the Open Geospatial Consortium (OGC)
  * and described in their Simple Feature Access and Coordinate Transformation
- * Service specifications. The current standard definition is in the ISO/IEC 
- * 13249-3:2011 standard, "Information technology -- Database languages -- 
+ * Service specifications. The current standard definition is in the ISO/IEC
+ * 13249-3:2011 standard, "Information technology -- Database languages --
  * SQL multimedia and application packages -- Part 3: Spatial" (SQL/MM).
  *
  * reference:
@@ -213,7 +213,7 @@ static int Polygon2WKT (const SHPObject *pObj, char *pbBuf, double offX, double 
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "POLYGON (");
         for (; iPart < pObj->nParts; iPart++) {
             start = pObj->panPartStart[iPart];
@@ -270,7 +270,7 @@ static int MultiPoint2WKT (const SHPObject *pObj, char *pbBuf, double offX, doub
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "MULTIPOINT (");
 
         for (; i < pObj->nVertices; i++) {
@@ -439,7 +439,7 @@ static int PolygonZ2WKT (const SHPObject *pObj, char *pbBuf, double offX, double
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "POLYGON Z (");
         for (; iPart < pObj->nParts; iPart++) {
             start = pObj->panPartStart[iPart];
@@ -500,7 +500,7 @@ static int MultiPointZ2WKT (const SHPObject *pObj, char *pbBuf, double offX, dou
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "MULTIPOINT Z (");
 
         for (; i < pObj->nVertices; i++) {
@@ -671,7 +671,7 @@ static int PolygonM2WKT (const SHPObject *pObj, char *pbBuf, double offX, double
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "POLYGON M (");
         for (; iPart < pObj->nParts; iPart++) {
             start = pObj->panPartStart[iPart];
@@ -732,7 +732,7 @@ static int MultiPointM2WKT (const SHPObject *pObj, char *pbBuf, double offX, dou
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "MULTIPOINT M (");
 
         for (; i < pObj->nVertices; i++) {
@@ -840,7 +840,7 @@ static int exMultiPoint2WKT (const SHPObjectEx *pObj, char *pbBuf, double offX, 
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "MULTIPOINT (");
 
         for (; i < pObj->nVertices; i++) {
@@ -887,7 +887,7 @@ static int exMultiPointZ2WKT (const SHPObjectEx *pObj, char *pbBuf, double offX,
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "MULTIPOINT Z (");
 
         for (; i < pObj->nVertices; i++) {
@@ -936,7 +936,7 @@ static int exMultiPointM2WKT (const SHPObjectEx *pObj, char *pbBuf, double offX,
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "MULTIPOINT M (");
 
         for (; i < pObj->nVertices; i++) {
@@ -1256,7 +1256,7 @@ static int exPolygon2WKT (const SHPObjectEx *pObj, char *pbBuf, double offX, dou
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "POLYGON (");
         for (; iPart < pObj->nParts; iPart++) {
             start = pObj->panPartStart[iPart];
@@ -1328,7 +1328,7 @@ static int exPolygonZ2WKT (const SHPObjectEx *pObj, char *pbBuf, double offX, do
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "POLYGON Z (");
         for (; iPart < pObj->nParts; iPart++) {
             start = pObj->panPartStart[iPart];
@@ -1402,7 +1402,7 @@ static int exPolygonM2WKT (const SHPObjectEx *pObj, char *pbBuf, double offX, do
         cb += sprintf(pbBuf + cb, ")");
     } else {
         static char tmpbuf[128];
- 
+
         cb += sprintf(tmpbuf, "POLYGON M (");
         for (; iPart < pObj->nParts; iPart++) {
             start = pObj->panPartStart[iPart];

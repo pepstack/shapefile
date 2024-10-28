@@ -15,7 +15,7 @@
  * option is discussed in more detail in shapelib.html.
  *
  * --
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -36,15 +36,15 @@
  *****************************************************************************/
 
 /*
- * Well-known text (WKT) is a text markup language for representing vector 
- * geometry objects on a map, spatial reference systems of spatial objects 
- * and transformations between spatial reference systems. A binary equivalent, 
- * known as well-known binary (WKB) is used to transfer and store the same 
- * information on databases, such as PostGIS, Microsoft SQL Server and DB2. 
- * The formats were originally defined by the Open Geospatial Consortium (OGC) 
+ * Well-known text (WKT) is a text markup language for representing vector
+ * geometry objects on a map, spatial reference systems of spatial objects
+ * and transformations between spatial reference systems. A binary equivalent,
+ * known as well-known binary (WKB) is used to transfer and store the same
+ * information on databases, such as PostGIS, Microsoft SQL Server and DB2.
+ * The formats were originally defined by the Open Geospatial Consortium (OGC)
  * and described in their Simple Feature Access and Coordinate Transformation
- * Service specifications. The current standard definition is in the ISO/IEC 
- * 13249-3:2011 standard, "Information technology -- Database languages -- 
+ * Service specifications. The current standard definition is in the ISO/IEC
+ * 13249-3:2011 standard, "Information technology -- Database languages --
  * SQL multimedia and application packages -- Part 3: Spatial" (SQL/MM).
  *
  * reference:
@@ -228,7 +228,7 @@ static int MultiPoint2WKB (const SHPObject *pObj, void *pv, double offX, double 
 
         for (; iPoint < pObj->nVertices; iPoint++) {
             ValBufCopy(pv, cb, wkb_bo_xdr);
-      
+
             v4 = BO_i32_htobe(WKB_Point2D);
             ValBufCopy(pv, cb, v4);
 
@@ -397,7 +397,7 @@ static int MultiPointZ2WKB (const SHPObject *pObj, void *pv, double offX, double
 
         for (; iPoint < pObj->nVertices; iPoint++) {
             ValBufCopy(pv, cb, wkb_bo_xdr);
-      
+
             v4 = BO_i32_htobe(WKB_PointZ);
             ValBufCopy(pv, cb, v4);
 
@@ -569,7 +569,7 @@ static int MultiPointM2WKB (const SHPObject *pObj, void *pv, double offX, double
 
         for (; iPoint < pObj->nVertices; iPoint++) {
             ValBufCopy(pv, cb, wkb_bo_xdr);
-      
+
             v4 = BO_i32_htobe(WKB_PointM);
             ValBufCopy(pv, cb, v4);
 
@@ -731,7 +731,7 @@ static int exMultiPoint2WKB (const SHPObjectEx *pObj, void *pv, double offX, dou
 
         for (; iPoint < pObj->nVertices; iPoint++) {
             ValBufCopy(pv, cb, wkb_bo_xdr);
-      
+
             v4 = BO_i32_htobe(WKB_Point2D);
             ValBufCopy(pv, cb, v4);
 
@@ -900,7 +900,7 @@ static int exMultiPointZ2WKB (const SHPObjectEx *pObj, void *pv, double offX, do
 
         for (; iPoint < pObj->nVertices; iPoint++) {
             ValBufCopy(pv, cb, wkb_bo_xdr);
-      
+
             v4 = BO_i32_htobe(WKB_PointZ);
             ValBufCopy(pv, cb, v4);
 
@@ -1072,7 +1072,7 @@ static int exMultiPointM2WKB (const SHPObjectEx *pObj, void *pv, double offX, do
 
         for (; iPoint < pObj->nVertices; iPoint++) {
             ValBufCopy(pv, cb, wkb_bo_xdr);
-      
+
             v4 = BO_i32_htobe(WKB_PointM);
             ValBufCopy(pv, cb, v4);
 

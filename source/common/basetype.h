@@ -23,11 +23,11 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 /**
- * @filename   basetype.h
+ * @file basetype.h
  *   Base Definitions and Types, Bob Jenkins, Liang Zhang
  *
  * @author     Liang Zhang <350137278@qq.com>
- * @version    0.0.14
+ * @version 0.0.19
  * @create     2019-09-30 12:37:44
  * @update     2024-10-04
  */

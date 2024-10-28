@@ -24,7 +24,7 @@
  **********************************************************************/
 
 /**
- * @filename   bo.h
+ * @file bo.h
  *  Byte Converter for 2, 4, 8 bytes numeric types.
  *
  * Big Endian: XDR (big endian) encoding of numeric types
@@ -52,7 +52,7 @@
  *                           |..|
  *
  * @author     Liang Zhang <350137278@qq.com>
- * @version    0.0.9
+ * @version 0.0.14
  * @create     2013-06-19
  * @update     2021-06-14 23:49:00
  */
@@ -235,7 +235,7 @@ __INLINE void BO_bytes_betoh(char *bytes, int size)
 {
     if (_host_little_endian) {
         BO_swap_bytes((void*) bytes, size);
-    }    
+    }
 }
 
 

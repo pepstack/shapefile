@@ -16,7 +16,7 @@
  * option is discussed in more detail in shapelib.html.
  *
  * --
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -138,7 +138,7 @@ SHPTreeHandle SHPCreateTree (SHPHandle hSHP, int nDimension, int nMaxDepth, doub
    */
     if (padfBoundsMin == 0) {
         SHPGetInfo(hSHP, 0, 0,
-        psTree->psRoot->adfBoundsMin, 
+        psTree->psRoot->adfBoundsMin,
         psTree->psRoot->adfBoundsMax);
     }
 
@@ -259,7 +259,7 @@ void SHPTreeSplitBounds (
     memcpy(padfBoundsMax1, padfBoundsMaxIn, sizeof(double) * 4);
     memcpy(padfBoundsMin2, padfBoundsMinIn, sizeof(double) * 4);
     memcpy(padfBoundsMax2, padfBoundsMaxIn, sizeof(double) * 4);
-    
+
     /* Split in X direction */
     if ((padfBoundsMaxIn[0] - padfBoundsMinIn[0]) > (padfBoundsMaxIn[1] - padfBoundsMinIn[1])) {
         double  dfRange = padfBoundsMaxIn[0] - padfBoundsMinIn[0];
@@ -283,11 +283,11 @@ static int SHPTreeNodeAddShapeId (
     int nDimension)
 {
     int    i;
-  
+
     /* If there are subnodes, then consider wiether this object will fit in them */
     if (nMaxDepth > 1 && psTreeNode->nSubNodes > 0) {
         for (i = 0; i < psTreeNode->nSubNodes; i++) {
-            if (SHPCheckObjectContained(psObject, nDimension, 
+            if (SHPCheckObjectContained(psObject, nDimension,
                 psTreeNode->apsSubNode[i]->adfBoundsMin,
                 psTreeNode->apsSubNode[i]->adfBoundsMax)) {
                 return SHPTreeNodeAddShapeId(psTreeNode->apsSubNode[i], psObject, nMaxDepth-1, nDimension);
@@ -391,7 +391,7 @@ void SHPTreeCollectShapeIds (
     int **ppanShapeList)
 {
     int i;
-    
+
     /* Does this node overlap the area of interest at all?  If not,
    *   return without adding to the list at all */
     if (!SHPCheckBoundsOverlap(psTreeNode->adfBoundsMin, psTreeNode->adfBoundsMax,
@@ -409,7 +409,7 @@ void SHPTreeCollectShapeIds (
     for (i = 0; i < psTreeNode->nShapeCount; i++) {
         (*ppanShapeList)[(*pnShapeCount)++] = psTreeNode->panShapeIds[i];
     }
-    
+
     /* Recurse to subnodes if they exist */
     for (i = 0; i < psTreeNode->nSubNodes; i++) {
         if (psTreeNode->apsSubNode[i] != 0) {
@@ -424,7 +424,7 @@ void SHPTreeCollectShapeIds (
  *  bounding box overlaps the search box.  The return value is
  *  an array of shapeids terminated by a -1.  The shapeids will
  *  be in order, as hopefully this will result in faster (more sequential)
- *  reading from the file. 
+ *  reading from the file.
  */
 int* SHPTreeFindLikelyShapes(SHPTreeHandle hTree, double *padfBoundsMin, double *padfBoundsMax, int *pnShapeCount)
 {

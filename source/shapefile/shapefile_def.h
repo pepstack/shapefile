@@ -3,10 +3,10 @@
  * @brief shapefile public definitions.
  *
  * @author cheungmine@qq.com
- * @version
- * @date
+ * @version 0.0.1
+ * @date 2024-10-10 19:25:35
  * @note
- * @since
+ * @since 2024-10-10 20:24:42
  */
 
 /******************************************************************************
@@ -25,7 +25,7 @@
  * option is discussed in more detail in shapelib.html.
  *
  * --
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -208,7 +208,7 @@ typedef int SHAPEFILE_RESULT;
 #define WKB_TINZM                  3016
 #define WKB_TIN2D                  WKB_TIN
 
-#define WKB_Triangle                 17  
+#define WKB_Triangle                 17
 #define WKB_TriangleZ              1017
 #define WKB_TriangleM              2017
 #define WKB_TriangleZM             3017
@@ -218,11 +218,11 @@ typedef int SHAPEFILE_RESULT;
 
 enum WKBByteOrder
 {
-    wkbXDR = 0x00,    /* Big Endian */    
+    wkbXDR = 0x00,    /* Big Endian */
     wkbNDR = 0x01     /* Little Endian */
 };
 
-#define WKBDefaultByteOrder wkbXDR  
+#define WKBDefaultByteOrder wkbXDR
 
 enum WKBGeometryType
 {
@@ -252,7 +252,7 @@ typedef struct LinearRing
 typedef struct WKBGeometryHeader
 {
     unsigned char  byteOrder;
-    uint32_t       wkbType; 
+    uint32_t       wkbType;
 } WKBGeometryHeader;
 
 typedef struct WKBPoint
@@ -293,7 +293,7 @@ typedef struct WKBMultiLineString
     uint32_t         numLineStrings;
     WKBLineString  lineStrings[1];
 } WKBMultiLineString;
- 
+
 typedef struct WKBMultiPolygon
 {
     unsigned char byteOrder;
@@ -478,7 +478,7 @@ typedef struct _SHPBounds
 
     double      ZMin;
     double      ZMax;
-    double      MMin;    
+    double      MMin;
     double      MMax;
 } SHPBounds;
 
@@ -520,7 +520,7 @@ typedef struct _SHPObject
 
     int         *panPartStart; /* Start Vertex of part */
     int         *panPartType;  /* Part Type (SHPP_RING if not SHPT_MULTIPATCH) */
-  
+
     int         nVertices;     /* Vertex list */
 
     double      *padfX;
@@ -562,7 +562,7 @@ typedef struct _SHPObjectEx
     int         nPointsSize;    /* total size of pPoints Buffer */
     int         nVertices;      /* actual points count */
 
-    SHPPointType  *pPoints;   
+    SHPPointType  *pPoints;
 
     double      *padfZ;
     double      *padfM;

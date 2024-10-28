@@ -3,10 +3,10 @@
  * @brief shapefile public api.
  *
  * @author cheungmine@qq.com
- * @version
- * @date
+ * @version 0.0.1
+ * @date 2024-10-10 19:25:35
  * @note
- * @since
+ * @since 2024-10-10 20:24:42
  */
 
 /******************************************************************************
@@ -25,7 +25,7 @@
  * option is discussed in more detail in shapelib.html.
  *
  * --
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -249,15 +249,15 @@ SHAPEFILE_API int DBFWriteDoubleAttribute (DBFHandle hDBF, int iShape, int iFiel
 SHAPEFILE_API int DBFWriteStringAttribute (DBFHandle hDBF, int iShape, int iField, const char * pszFieldValue);
 
 SHAPEFILE_API int DBFWriteLogicalAttribute (DBFHandle hDBF, int iShape, int iField, const char lFieldValue);
-         
+
 SHAPEFILE_API int DBFWriteAttributeDirectly (DBFHandle psDBF, int hEntity, int iField, void * pValue);
-                                                             
+
 SHAPEFILE_API const char* DBFReadTuple (DBFHandle psDBF, int hEntity);
 
 SHAPEFILE_API int DBFWriteTuple (DBFHandle psDBF, int hEntity, void *pRawTuple);
 
 SHAPEFILE_API DBFHandle DBFCloneEmpty (DBFHandle psDBF, const char * pszFilename);
- 
+
 SHAPEFILE_API void  DBFClose (DBFHandle hDBF);
 
 SHAPEFILE_API void  DBFUpdateHeader (DBFHandle hDBF);
