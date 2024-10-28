@@ -246,6 +246,9 @@ clean:
 	-rm -f $(SHAPEFILE_DYNAMIC_LIB)
 	-rm -f $(SHAPEFILE_STATIC_LIB).$(OSARCH)
 	-rm -f $(SHAPEFILE_DYNAMIC_LIB).$(OSARCH)
+	-rm -rf $(PREFIX)/projects/msvc/shapefile/.vs
+	-rm -rf $(PREFIX)/projects/msvc/shapefile/build
+	-rm -rf $(PREFIX)/projects/msvc/shapefile/output
 
 
 cleanall: clean
