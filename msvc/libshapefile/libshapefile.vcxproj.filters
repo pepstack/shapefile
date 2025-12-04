@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{89a0fec5-042b-4f18-91e5-cb94d45f874a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\shapefile">
+      <UniqueIdentifier>{69b9f854-aff9-48b9-804f-7ecba2865bdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{91065a97-cb16-4a9d-b10b-59971d5de94c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\shapefile\dbfopen.c">
+      <Filter>src\shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shapefile\shapefile.c">
+      <Filter>src\shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shapefile\shptree.c">
+      <Filter>src\shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shapefile\shp2wkb.c">
+      <Filter>src\shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\shapefile\shp2wkt.c">
+      <Filter>src\shapefile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\rtree.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\shapefile\shapefile_api.h">
+      <Filter>src\shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shapefile_def.h">
+      <Filter>src\shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shapefile_i.h">
+      <Filter>src\shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2json.h">
+      <Filter>src\shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2wkb.h">
+      <Filter>src\shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\shapefile\shp2wkt.h">
+      <Filter>src\shapefile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\bo.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\memapi.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\platforms.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\rtree.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\unitypes.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
