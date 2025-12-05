@@ -69,8 +69,14 @@ static const char LIBVERSION[] = "1.2.1";
  # pragma warning (disable : 4996)
 #endif
 
-// copy memory from const a to b
-#define ByteCopy(a, b, c)  memcpy((b), (a), (c))
+#define ByteCopy(src, dst, size)  memcpy((void*)(dst), (const void*)(src), (size_t)(size))
+
+#define SafeFree(ptr)  do { \
+        if (ptr) { \
+            free(ptr); \
+            ptr = NULL; \
+        } \
+    } while (0)
 
 #ifndef MAX_V2
  #define MAX_V2(a, b)  ((a)>(b) ? (a) : (b))
@@ -94,15 +100,15 @@ typedef struct _SHPInfoRTree
 
 typedef struct  _SHPInfo
 {
-    FILE        *fpSHP;
-    FILE        *fpSHX;
+    FILE       *fpSHP;
+    FILE       *fpSHX;
 
     int         nShapeType; /* SHPT_* */
-    int         nFileSize;  /* SHP file */
-    int         nRecords;
-    int         nMaxRecords;
-    int         *panRecOffset;
-    int         *panRecSize;
+    uint32_t    nFileSize;  /* SHP file */
+    uint32_t    nRecords;
+    uint32_t    nMaxRecords;
+    uint32_t   *panRecOffset;
+    uint32_t   *panRecSize;
 
     double      adBoundsMin[4];
     double      adBoundsMax[4];

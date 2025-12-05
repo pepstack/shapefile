@@ -503,16 +503,14 @@ typedef struct _SHPObjectExtent
 /* -------------------------------------------------------------------- */
 typedef struct _SHPObject
 {
-    int         nSHPType;      /* Shape Type (SHPT_* - see list above) */
-    int         nShapeId;      /* Shape Number (-1 is unknown/unassigned) ID */
+    int32_t      nSHPType;      /* Shape Type (SHPT_* - see list above) */
+    int32_t      nShapeId;      /* Shape Number (-1 is unknown/unassigned) ID */
 
-    int         nParts;        /* of Parts (0 implies single part with no info) */
+    int32_t      nParts;        /* of Parts (0 implies single part with no info) */
+    int32_t     *panPartStart;  /* Start Vertex of part */
+    int32_t     *panPartType;   /* Part Type (SHPP_RING if not SHPT_MULTIPATCH) */
 
-    int         *panPartStart; /* Start Vertex of part */
-    int         *panPartType;  /* Part Type (SHPP_RING if not SHPT_MULTIPATCH) */
-
-    int         nVertices;     /* Vertex list */
-
+    int32_t      nVertices;     /* Vertex list */
     double      *padfX;
     double      *padfY;
     double      *padfZ;        /* (all zero if not provided) */
@@ -524,7 +522,6 @@ typedef struct _SHPObject
             double      dfYMin;
             double      dfZMin;
             double      dfMMin;
-
             double      dfXMax;
             double      dfYMax;
             double      dfZMax;
